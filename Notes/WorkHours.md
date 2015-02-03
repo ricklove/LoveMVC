@@ -12,9 +12,10 @@
 
 - Create task list
 
-### 11:16-
+### 11:16-12:00
 
 - Create project structure without dependencies
+- Parse Razor
 
 # Tasks
 
