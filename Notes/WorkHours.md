@@ -2,17 +2,29 @@
 
 # Hours
 
+## Untracked
+
+- Create prototype
+
 ## Hour 1
 
-### 2015-02-01 5:45-5:56
+### 2015-02-03 11:05-11:15
 
-- Create project
-- Create TodoMVC test project
+- Create task list
 
-### 5:57-8:00
+### 11:16-
 
-- Implement TodoMVC
+- Create project structure without dependencies
 
 # Tasks
 
-- Implement TodoMVC
+## Generate Templates
+
+- Remove Dependencies from code
+- Setup Minimal Love Template Generation Environment
+
+## Convert Templates to Pure Html
+
+## Convert Templates to Knockout Client
+
+## Convert Templates to Asp.Net Mvc with Client Selection
