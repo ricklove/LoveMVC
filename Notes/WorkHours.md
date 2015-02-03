@@ -17,6 +17,10 @@
 - Create project structure without dependencies
 - Parse Razor
 
+### 12:31-2:45
+
+- Create LoveSyntaxTree from Razor syntax tree
+
 # Tasks
 
 ## Generate Templates
