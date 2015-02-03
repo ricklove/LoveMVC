@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Razor.Parser.SyntaxTree;
 
-namespace LoveMvc.WebMvc
+namespace LoveMvc.Razor
 {
     public class RazorDebugView
     {

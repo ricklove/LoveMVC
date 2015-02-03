@@ -17,9 +17,13 @@
 - Create project structure without dependencies
 - Parse Razor
 
-### 12:31-2:45
+### 12:31-14:45
 
 - Create LoveSyntaxTree from Razor syntax tree
+
+### 15:30-
+
+- Create Mvc MarkupExpressionEvaluator
 
 # Tasks
 

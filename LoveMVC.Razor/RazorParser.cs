@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web.Razor;
 using System.Web.Razor.Parser.SyntaxTree;
 
-namespace LoveMvc.WebMvc
+namespace LoveMvc.Razor
 {
     public class RazorParser : ITemplateParser
     {
@@ -16,10 +16,10 @@ namespace LoveMvc.WebMvc
             var parser = new RazorTemplateEngine(host);
             var results = parser.ParseTemplate(source);
 
-            var debugText = RazorDebugView.ToDebug(results);
+            //var debugText = RazorDebugView.ToDebug(results);
 
             var tree = VisitTree(results);
-            var treeText = tree.ToString();
+            //var treeText = tree.ToString();
 
             return tree;
         }
