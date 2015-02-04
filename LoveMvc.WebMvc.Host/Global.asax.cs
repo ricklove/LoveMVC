@@ -13,6 +13,8 @@ namespace LoveMvc.WebMvc.Host
         {
             AreaRegistration.RegisterAllAreas();
             RouteConfig.RegisterRoutes(RouteTable.Routes);
+
+            LoveMvc.WebMvc.WebMvcMarkupExpressionEvaluator.Register();
         }
     }
 }

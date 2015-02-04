@@ -30,6 +30,13 @@
 - Create Mvc MarkupExpressionEvaluator
 - Host in Asp.Net MVC
 
+### 8:21-8:45
+
+- Execute the code in a view...
+
+### 9:45-13:00
+
+- Evaluation almost working 
 
 # Tasks
 

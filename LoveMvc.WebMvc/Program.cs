@@ -50,7 +50,7 @@ namespace LoveMvc.WebMvc
         //}
 
 
-        public static void Host(System.Web.Mvc.ControllerContext controllerContext)
+        public static void Host(System.Web.Mvc.ControllerContext controllerContext, Action<string, object> doRenderView)
         {
             //var sourcePath = Path.Combine(Directory.GetCurrentDirectory() + @"\..\..\TestDocs\Todos.love.cshtml");
             var sourcePath = @"D:\UserData\Projects\Products\Frameworks\LoveMVC\LoveMvc.WebMvc\TestDocs\Todos.love.cshtml";
@@ -64,16 +64,25 @@ namespace LoveMvc.WebMvc
             var model = new TodosViewModel();
             var evaluator = new WebMvcMarkupExpressionEvaluator(controllerContext);
 
+            var expressions = new List<LoveNodeWithContext>();
+
             foreach (var nWithContext in results.Document.Flatten())
             {
                 var n = nWithContext.Node;
 
                 if (n is LoveMarkupExpression)
                 {
-                    var expression = n as LoveMarkupExpression;
-                    var evaluated = evaluator.Evaluate(expression, model);
-                    nWithContext.Parent.Replace(expression, evaluated);
+                    expressions.Add(nWithContext);
                 }
+            }
+
+            foreach (var nWithContext in expressions)
+            {
+                var n = nWithContext.Node;
+
+                var expression = n as LoveMarkupExpression;
+                var evaluated = evaluator.Evaluate(expression, model, doRenderView);
+                nWithContext.Parent.Replace(expression, evaluated);
             }
         }
     }

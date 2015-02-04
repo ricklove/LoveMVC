@@ -11,10 +11,26 @@ namespace LoveMvc.WebMvc.Host.Controllers
     {
         public ActionResult Index()
         {
-            LoveMvc.WebMvc.Program.Host(ControllerContext);
+            LoveMvc.WebMvc.Program.Host(ControllerContext, (name, m) =>
+            {
+                var result = PartialView(name, m);
+                result.ExecuteResult(ControllerContext);
+
+                // TESTING
+                Response.End();
+            });
             return null;
         }
 
-
+        public ActionResult Test()
+        {
+            return View();
+        }
+        
+        public ActionResult Test2()
+        {
+            var model = new LoveMvc.WebMvc.TestDocs.TodosViewModel();
+            return View(model);
+        }
     }
 }
