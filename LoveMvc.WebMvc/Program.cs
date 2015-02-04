@@ -4,14 +4,77 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
+using LoveMvc.Razor;
+using LoveMvc.WebMvc.TestDocs;
 
 namespace LoveMvc.WebMvc
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            ////var sourcePath = Path.Combine(Directory.GetCurrentDirectory() + @"\..\..\TestDocs\Todos.love.cshtml");
+            //var sourcePath = @"D:\UserData\Projects\Products\Frameworks\LoveMVC\LoveMvc.WebMvc\TestDocs\Todos.love.cshtml";
+            //sourcePath = Path.GetFullPath(sourcePath);
 
+            //var parser = new RazorParser();
+            //var results = parser.Parse(new StreamReader(sourcePath));
+
+            //var rText = results.ToString();
+
+            //var model = new TodosViewModel();
+            //var evaluator = new WebMvcMarkupExpressionEvaluator(null);
+
+            //foreach (var nWithContext in results.Document.Flatten())
+            //{
+            //    var n = nWithContext.Node;
+
+            //    if (n is LoveMarkupExpression)
+            //    {
+            //        var expression = n as LoveMarkupExpression;
+            //        var evaluated = evaluator.Evaluate(expression, model);
+            //        nWithContext.Parent.Replace(expression, evaluated);
+            //    }
+            //}
+
+
+        }
+
+        //public static void Test(System.Web.Mvc.HtmlHelper<TodosViewModel> html)
+        //{
+        //    var label = html.LabelFor(x => x.NewTodoText);
+        //    var display = html.DisplayFor(x => x.NewTodoText);
+        //    var editor = html.EditorFor(x => x.NewTodoText);
+        //    var text = editor.ToString();
+        //    //return text;
+        //}
+
+
+        public static void Host(System.Web.Mvc.ControllerContext controllerContext)
+        {
+            //var sourcePath = Path.Combine(Directory.GetCurrentDirectory() + @"\..\..\TestDocs\Todos.love.cshtml");
+            var sourcePath = @"D:\UserData\Projects\Products\Frameworks\LoveMVC\LoveMvc.WebMvc\TestDocs\Todos.love.cshtml";
+            sourcePath = Path.GetFullPath(sourcePath);
+
+            var parser = new RazorParser();
+            var results = parser.Parse(new StreamReader(sourcePath));
+
+            var rText = results.ToString();
+
+            var model = new TodosViewModel();
+            var evaluator = new WebMvcMarkupExpressionEvaluator(controllerContext);
+
+            foreach (var nWithContext in results.Document.Flatten())
+            {
+                var n = nWithContext.Node;
+
+                if (n is LoveMarkupExpression)
+                {
+                    var expression = n as LoveMarkupExpression;
+                    var evaluated = evaluator.Evaluate(expression, model);
+                    nWithContext.Parent.Replace(expression, evaluated);
+                }
+            }
         }
     }
 }

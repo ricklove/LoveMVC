@@ -37,6 +37,7 @@
     <!-- A reference to the entire .NET Framework is automatically included -->
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Attributes.cs" />
     <Compile Include="Interfaces.cs" />
     <Compile Include="LoveSyntaxTree.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -11,4 +11,9 @@ namespace LoveMvc
     {
         LoveSyntaxTree Parse(TextReader source);
     }
+
+    public interface IMarkupExpressionEvaluator
+    {
+        LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model);
+    }
 }

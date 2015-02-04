@@ -64,6 +64,49 @@ namespace LoveMvc
 
             return sb.ToString();
         }
+
+        public IEnumerable<LoveNodeWithContext> Flatten(LoveBlock parent = null)
+        {
+            yield return new LoveNodeWithContext(this, parent);
+
+            foreach (var c in Children)
+            {
+                if (c is LoveBlock)
+                {
+                    foreach (var cItem in (c as LoveBlock).Flatten(this))
+                    {
+                        yield return cItem;
+                    }
+                }
+                else
+                {
+                    yield return new LoveNodeWithContext(c, this);
+                }
+            }
+        }
+
+        public void Replace(LoveNode toReplace, LoveNode replacement)
+        {
+            for (int i = 0; i < Children.Count; i++)
+            {
+                if (Children[i] == toReplace)
+                {
+                    Children[i] = replacement;
+                }
+            }
+        }
+    }
+
+    public class LoveNodeWithContext
+    {
+        public LoveNode Node { get; private set; }
+        public LoveBlock Parent { get; private set; }
+
+        public LoveNodeWithContext(LoveNode node, LoveBlock parent)
+        {
+            Node = node;
+            Parent = parent;
+        }
     }
 
     public class LoveSpan : LoveNode
@@ -87,6 +130,19 @@ namespace LoveMvc
         public LoveMarkup(int start, int length, string content)
             : base(start, length, content)
         {
+        }
+    }
+
+    public class LoveMarkupExpression : LoveSpan
+    {
+        public LoveMarkupExpression(int start, int length, string content)
+            : base(start, length, content)
+        {
+        }
+
+        public override string ToString()
+        {
+            return "[[[" + Content + "]]]";
         }
     }
 

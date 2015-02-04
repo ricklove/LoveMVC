@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Web.Razor;
 using System.Web.Razor.Parser.SyntaxTree;
 
@@ -71,6 +72,10 @@ namespace LoveMvc.Razor
                     {
                         newChild = new LoveMarkup(newSpan.Start, newSpan.Length + cSpan.Length, newSpan.Content + cSpan.Content);
                     }
+                    else if (cSpan is LoveMarkupExpression)
+                    {
+                        newChild = new LoveMarkupExpression(newSpan.Start, newSpan.Length + cSpan.Length, newSpan.Content + cSpan.Content);
+                    }
                 }
                 else
                 {
@@ -95,12 +100,42 @@ namespace LoveMvc.Razor
 
             if (lBlock.Children.Count == 0) { return null; }
 
+            // Convert binding to markup expression if possible
+            for (int i = 0; i < lBlock.Children.Count; i++)
+            {
+                var mChild = ConvertToMarkupExpression(lBlock.Children[i]);
+
+                if (mChild != null)
+                {
+                    lBlock.Children[i] = mChild;
+                }
+            }
+
 
             // Convert to control blocks if Possible
             var cBlock = ConvertToControlBlock(lBlock);
             if (cBlock != null) { return cBlock; }
 
             return lBlock;
+        }
+
+        private LoveMarkupExpression ConvertToMarkupExpression(LoveNode loveNode)
+        {
+            var loveBinding = loveNode as LoveBinding;
+
+            if (loveBinding != null)
+            {
+                var regexHtmlHelper = @"\s*Html\.";
+
+                var m = Regex.Match(loveBinding.Content, regexHtmlHelper);
+
+                if (m.Success)
+                {
+                    return new LoveMarkupExpression(loveBinding.Start, loveBinding.Length, loveBinding.Content);
+                }
+            }
+
+            return null;
         }
 
         private LoveControlBlock ConvertToControlBlock(LoveBlock block)
@@ -114,7 +149,7 @@ namespace LoveMvc.Razor
 
                 var regexControl = @"\s*((?:if)|(?:foreach))\s*\((.*)\)\s*({)?\s*";
 
-                var m = System.Text.RegularExpressions.Regex.Match(firstBinding.Content, regexControl);
+                var m = Regex.Match(firstBinding.Content, regexControl);
                 if (m.Success)
                 {
                     var controlType = m.Groups[1].Value;
@@ -155,7 +190,7 @@ namespace LoveMvc.Razor
             {
                 var regexForeach = @"\s*(\S+)\s+in\s+(\S+)\s*";
 
-                var m = System.Text.RegularExpressions.Regex.Match(statement, regexForeach);
+                var m = Regex.Match(statement, regexForeach);
                 if (m.Success)
                 {
                     var itemName = m.Groups[1].Value;
