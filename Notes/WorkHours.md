@@ -36,7 +36,19 @@
 
 ### 9:45-13:00
 
-- Evaluation almost working 
+- Evaluation almost working
+
+### 14:30-15:00
+
+- Debug Evaluation
+
+### 2015-02-05 4:00-5:00
+
+- Add Evaluation Scope
+
+### 5:01-6:35
+
+- Got HtmlHelpers working without IIS host
 
 # Tasks
 

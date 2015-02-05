@@ -123,8 +123,12 @@ namespace LoveMvc.WebMvc
 
         public HtmlHelper<T> CreateHtmlHelper<T>(T model, StringWriter writer)
         {
-            return new HtmlHelper<T>(new ViewContext(ControllerContext, new WebFormView(ControllerContext, "VIEW_PATH"), new ViewDataDictionary(), new TempDataDictionary(), writer), new ViewPage()); ;
+            var controllerContext = FakeControllerContext.CreateControllerContext();
+            //var controllerContext = ControllerContext;
+            return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(), new TempDataDictionary(), writer), new ViewPage()); ;
         }
+
+
 
         public class ExpressionProvider : VirtualPathProvider
         {
