@@ -60,7 +60,12 @@
 
 ### 7:16-8:05
 
-- Create Test project
+- Create TestDocs project
+
+### 8:06-8:15
+
+- Create LoveTemplateBuilder
+
 
 # Tasks
 
