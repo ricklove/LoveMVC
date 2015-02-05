@@ -41,7 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LoveMvc\LoveMvc.csproj">
-      <Project>{1f0aa8a5-3dbd-46f5-8c55-fc0d1ea8d458}</Project>
+      <Project>{13d4ab9c-5fba-430c-8f1a-bde3e3732f56}</Project>
       <Name>LoveMvc</Name>
     </ProjectReference>
   </ItemGroup>

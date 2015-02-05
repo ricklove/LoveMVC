@@ -66,6 +66,18 @@
 
 - Create LoveTemplateBuilder
 
+### 9:30-11:45
+
+- Add Test Views
+- Add Common Tests
+
+### 11:46-12:00
+
+- Verify Bindings and Scope
+
+### 12:01-12:53
+
+- Fixed stack trace
 
 # Tasks
 

@@ -1,0 +1,16 @@
+﻿@model IEnumerable<Exception>
+
+@{
+
+}
+
+<div style="padding:10px; margin:10px; border:1px solid black">
+    <h3>Tests Results</h3>
+    @foreach (var ex in Model)
+    {
+        <div style="border: solid 1px red">
+            @ex.ToString()
+        </div>
+    }
+
+</div>

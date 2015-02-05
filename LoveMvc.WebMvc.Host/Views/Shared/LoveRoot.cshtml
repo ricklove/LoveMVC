@@ -1,0 +1,41 @@
+﻿@using LoveMvc
+@model LoveNode
+
+@{
+
+}
+
+<style>
+    .document {
+        margin:10px;
+        padding:10px;
+        background-color: black;
+    }
+
+    .foreach {
+        color: blue;
+    }
+
+    .if {
+        color: lime;
+    }
+
+    .span {
+        color: white;
+        white-space: pre;
+    }
+
+    .binding {
+        color: yellow;
+        white-space: pre;
+    }
+
+    .expression {
+        color: red;
+        white-space: pre;
+    }
+</style>
+
+<div class="document">
+    @Html.Partial("LoveNode", Model)
+</div>
