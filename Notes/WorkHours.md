@@ -52,10 +52,12 @@
 
 # Tasks
 
+
 ## Generate Templates
 
 - Remove Dependencies from code
 - Setup Minimal Love Template Generation Environment
+- Create Test environment (Still requires IIS because of Virtual Path Providers)
 
 ## Convert Templates to Pure Html
 

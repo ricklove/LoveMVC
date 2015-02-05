@@ -18,7 +18,6 @@ namespace LoveMvc.WebMvc
         {
             _provider = new ExpressionProvider();
             System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(_provider);
-            //ViewEngines.Engines.Insert(0, _engine);
         }
 
         public ControllerContext ControllerContext { get; private set; }
@@ -123,8 +122,8 @@ namespace LoveMvc.WebMvc
 
         public HtmlHelper<T> CreateHtmlHelper<T>(T model, StringWriter writer)
         {
-            var controllerContext = FakeControllerContext.CreateControllerContext();
-            //var controllerContext = ControllerContext;
+            //var controllerContext = FakeControllerContext.CreateControllerContext();
+            var controllerContext = ControllerContext;
             return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(), new TempDataDictionary(), writer), new ViewPage()); ;
         }
 
