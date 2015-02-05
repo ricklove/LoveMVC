@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveMvc.WebMvc.Host", "Love
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveMvc.Razor", "LoveMvc.Razor\LoveMvc.Razor.csproj", "{F61ABDDC-F2D7-4757-AF2C-934A3354CAAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveMvc.TestDocs", "LoveMvc.TestDocs\LoveMvc.TestDocs.csproj", "{BD2183DD-F618-4BC1-ACB9-7B73FBB311A3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{F61ABDDC-F2D7-4757-AF2C-934A3354CAAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F61ABDDC-F2D7-4757-AF2C-934A3354CAAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F61ABDDC-F2D7-4757-AF2C-934A3354CAAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD2183DD-F618-4BC1-ACB9-7B73FBB311A3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD2183DD-F618-4BC1-ACB9-7B73FBB311A3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD2183DD-F618-4BC1-ACB9-7B73FBB311A3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD2183DD-F618-4BC1-ACB9-7B73FBB311A3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

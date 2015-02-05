@@ -11,7 +11,11 @@ namespace LoveMvc.WebMvc.Host.Controllers
     {
         public ActionResult Index()
         {
-            LoveMvc.WebMvc.Program.Host(ControllerContext);
+            foreach (var doc in LoveMvc.TestDocs.WebMvc._TestDocs.GetDocs())
+            {
+                LoveMvc.WebMvc.Program.Host(ControllerContext, doc);
+            }
+
             return null;
         }
     }

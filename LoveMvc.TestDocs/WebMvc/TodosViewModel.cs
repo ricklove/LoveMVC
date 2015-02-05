@@ -1,13 +1,12 @@
-﻿using LoveMVC;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoveMvc.WebMvc.TestDocs
+namespace LoveMvc.TestDocs.WebMvc
 {
-    public class TodosViewModel
+    public class TodosViewModel : TestViewModel
     {
         public List<TodoItemViewModel> Todos { get; set; }
 

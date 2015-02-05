@@ -16,4 +16,10 @@ namespace LoveMvc
     {
         LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model);
     }
+
+    public interface IViewViewModelPair
+    {
+        object Model { get; }
+        TextReader ViewSource { get; }
+    }
 }

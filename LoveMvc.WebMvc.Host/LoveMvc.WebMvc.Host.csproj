@@ -102,6 +102,14 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\LoveMvc.Razor\LoveMvc.Razor.csproj">
+      <Project>{f61abddc-f2d7-4757-af2c-934a3354caaa}</Project>
+      <Name>LoveMvc.Razor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LoveMvc.TestDocs\LoveMvc.TestDocs.csproj">
+      <Project>{bd2183dd-f618-4bc1-acb9-7b73fbb311a3}</Project>
+      <Name>LoveMvc.TestDocs</Name>
+    </ProjectReference>
     <ProjectReference Include="..\LoveMvc.WebMvc\LoveMvc.WebMvc.csproj">
       <Project>{632bba91-60f7-4283-a182-4c3ec77c4c6a}</Project>
       <Name>LoveMvc.WebMvc</Name>

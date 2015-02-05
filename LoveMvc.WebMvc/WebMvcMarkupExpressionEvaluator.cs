@@ -51,19 +51,19 @@ namespace LoveMvc.WebMvc
             throw new InvalidOperationException();
         }
 
-        private void Test()
-        {
-            var model = new LoveMvc.WebMvc.TestDocs.TodosViewModel();
+        //private void Test()
+        //{
+        //    var model = new LoveMvc.WebMvc.TestDocs.TodosViewModel();
 
-            var sb = new StringBuilder();
-            var writer = new StringWriter(sb);
-            var html = CreateHtmlHelper(model, writer);
+        //    var sb = new StringBuilder();
+        //    var writer = new StringWriter(sb);
+        //    var html = CreateHtmlHelper(model, writer);
 
-            html.DisplayFor(m => m.NewTodoText);
+        //    html.DisplayFor(m => m.NewTodoText);
 
-            var result = sb.ToString();
+        //    var result = sb.ToString();
 
-        }
+        //}
 
         private string CreatePartialView<T>(T model, string content, IEnumerable<LoveScope> scopes)
         {

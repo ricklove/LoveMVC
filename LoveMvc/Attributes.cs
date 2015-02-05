@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace LoveMVC
+namespace LoveMvc
 {
     [AttributeUsage(AttributeTargets.Property)]
     public class ComputedAttribute : Attribute

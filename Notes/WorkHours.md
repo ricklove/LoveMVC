@@ -58,6 +58,10 @@
 
 - Clean up project
 
+### 7:16-8:05
+
+- Create Test project
+
 # Tasks
 
 
