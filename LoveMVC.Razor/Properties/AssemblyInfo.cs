@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("LoveMVC.Razor")]
+[assembly: AssemblyTitle("LoveMvc.Razor")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("LoveMVC.Razor")]
+[assembly: AssemblyProduct("LoveMvc.Razor")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("68537940-2989-4602-8dc3-fae5d78097c8")]
+[assembly: Guid("52658ddc-59d6-439a-810f-fb3ce4caeb98")]
 
 // Version information for an assembly consists of the following four values:
 //

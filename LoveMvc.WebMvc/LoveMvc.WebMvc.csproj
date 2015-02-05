@@ -36,7 +36,6 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <None Include="FakeViewContext.cs" />
     <Compile Include="FakeControllerContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -44,9 +43,9 @@
     <Compile Include="WebMvcMarkupExpressionEvaluator.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\LoveMVC.Razor\LoveMVC.Razor.csproj">
-      <Project>{96f53143-12aa-4d32-88e3-b4e52d5627e4}</Project>
-      <Name>LoveMVC.Razor</Name>
+    <ProjectReference Include="..\LoveMvc.Razor\LoveMvc.Razor.csproj">
+      <Project>{f61abddc-f2d7-4757-af2c-934a3354caaa}</Project>
+      <Name>LoveMvc.Razor</Name>
     </ProjectReference>
     <ProjectReference Include="..\LoveMvc\LoveMvc.csproj">
       <Project>{1f0aa8a5-3dbd-46f5-8c55-fc0d1ea8d458}</Project>
@@ -60,7 +59,6 @@
     <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="TestDocs\Todos.love.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

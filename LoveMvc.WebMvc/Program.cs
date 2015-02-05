@@ -14,22 +14,11 @@ namespace LoveMvc.WebMvc
         public static void Main(string[] args)
         {
             //WebMvcMarkupExpressionEvaluator.Register();
-            Host(FakeControllerContext.CreateControllerContext(), null);
+            Host(FakeControllerContext.CreateControllerContext());
         }
 
-        //public static void Test(System.Web.Mvc.HtmlHelper<TodosViewModel> html)
-        //{
-        //    var label = html.LabelFor(x => x.NewTodoText);
-        //    var display = html.DisplayFor(x => x.NewTodoText);
-        //    var editor = html.EditorFor(x => x.NewTodoText);
-        //    var text = editor.ToString();
-        //    //return text;
-        //}
-
-
-        public static void Host(System.Web.Mvc.ControllerContext controllerContext, Action<string, object> doRenderView)
+        public static void Host(System.Web.Mvc.ControllerContext controllerContext)
         {
-            //var sourcePath = Path.Combine(Directory.GetCurrentDirectory() + @"\..\..\TestDocs\Todos.love.cshtml");
             var sourcePath = @"D:\UserData\Projects\Products\Frameworks\LoveMVC\LoveMvc.WebMvc\TestDocs\Todos.love.cshtml";
             sourcePath = Path.GetFullPath(sourcePath);
 
@@ -54,7 +43,7 @@ namespace LoveMvc.WebMvc
             foreach (var n in expressions)
             {
                 var expression = n as LoveMarkupExpression;
-                var evaluated = evaluator.Evaluate(expression, model, doRenderView);
+                var evaluated = evaluator.Evaluate(expression, model);
                 n.Parent.Replace(expression, evaluated);
             }
         }

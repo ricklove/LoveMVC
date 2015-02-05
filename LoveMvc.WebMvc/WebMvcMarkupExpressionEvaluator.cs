@@ -26,32 +26,13 @@ namespace LoveMvc.WebMvc
             ControllerContext = controllerContext;
         }
 
-        public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model, Action<string, object> doRenderExpression)
+        public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model)
         {
-            //Test();
-
             if (expression.Content.Trim().StartsWith("Html."))
             {
                 // Register view
                 var pView = CreatePartialView(model, "@" + expression.Content + "", expression.GetScopes());
                 var mainPath = _provider.RegisterExpression("H_" + expression.Content.GetHashCode(), pView);
-
-                // This works to render to client
-
-                //HttpResponse response = HttpContext.Current.Response;
-                //var oldFilter = response.Filter;
-                //response.Flush();
-
-                //var filter = new MemoryStream();
-                //response.Filter = filter;
-
-                //doRenderExpression(mainPath, model);
-
-                //response.Flush();
-                //response.Filter = oldFilter;
-
-                //var result = new StreamReader(filter).ReadToEnd();
-                //var result = "";
 
                 // Trying to intercept response
                 var sb = new StringBuilder();
@@ -65,17 +46,9 @@ namespace LoveMvc.WebMvc
                 var b = new LoveBlock(0, 0);
                 b.Children.Add(new LoveMarkup(0, 0, result));
                 return b;
-
-                //var html = new HtmlHelper<T>(new FakeViewContext(), new FakeViewDataContainer(model));
-                //html.EditorFor(m => m.);
-
-
-                //throw new NotImplementedException();
             }
 
-            //throw new InvalidOperationException();
-
-            return null;
+            throw new InvalidOperationException();
         }
 
         private void Test()
@@ -137,9 +110,7 @@ namespace LoveMvc.WebMvc
 
         public HtmlHelper<T> CreateHtmlHelper<T>(T model, StringWriter writer)
         {
-            //var controllerContext = FakeControllerContext.CreateControllerContext();
             var controllerContext = ControllerContext;
-            //return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(), new TempDataDictionary(), writer), new ViewPage()); ;
             return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(model), new TempDataDictionary(), writer), new ViewPage()); ;
         }
 

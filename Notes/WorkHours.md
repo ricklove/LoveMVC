@@ -54,6 +54,10 @@
 
 - False alarm, still requires IIS
 
+### 6:56-7:15
+
+- Clean up project
+
 # Tasks
 
 
