@@ -41,13 +41,19 @@
     <Compile Include="WebMvc\_TestDocs.cs" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="WebMvc\Todos.love.cshtml" />
+    <EmbeddedResource Include="WebMvc\Todos.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LoveMvc\LoveMvc.csproj">
       <Project>{13d4ab9c-5fba-430c-8f1a-bde3e3732f56}</Project>
       <Name>LoveMvc</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebMvc\NotBinding.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="WebMvc\PureMarkup.cshtml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,4 +22,18 @@ namespace LoveMvc
         object Model { get; }
         TextReader ViewSource { get; }
     }
+
+    public class ViewViewModelPair : IViewViewModelPair
+    {
+        public object Model { get; private set; }
+
+        private Func<TextReader> _doGetViewSource;
+        public TextReader ViewSource { get { return _doGetViewSource(); } }
+
+        public ViewViewModelPair(object model, Func<TextReader> doGetViewSource)
+        {
+            Model = model;
+            _doGetViewSource = doGetViewSource;
+        }
+    }
 }

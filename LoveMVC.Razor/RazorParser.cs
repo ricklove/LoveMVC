@@ -20,7 +20,7 @@ namespace LoveMvc.Razor
             //var debugText = RazorDebugView.ToDebug(results);
 
             var tree = VisitTree(results);
-            //var treeText = tree.ToString();
+            var treeText = tree.ToString();
 
             return tree;
         }
@@ -28,8 +28,91 @@ namespace LoveMvc.Razor
         private LoveSyntaxTree VisitTree(ParserResults results)
         {
             var document = VisitBlock(results.Document);
+
+            // Simplify blocks
+            SimplifyChildren(document);
+
+            // Handle "@model View.Model" which is cut into a binding and a markup
+            HandleModelStatement(document);
+
             var tree = new LoveSyntaxTree(document);
             return tree;
+        }
+
+        private void HandleModelStatement(LoveBlock document)
+        {
+            if (document.Children.Count <= 1) { return; }
+
+            var first = document.Children[0] as LoveSpan;
+            var second = document.Children[1] as LoveSpan;
+
+            if (first == null || second == null) { return; }
+
+            var modelMatch = Regex.Match(second.Content, @"^(\s*[A-Za-z0-9\.]+(?:\r\n)?)([\s\S]*)?$");
+
+            if (first.Content == "model" && modelMatch.Success)
+            {
+                var modelLine = modelMatch.Groups[1].Value;
+                var remaining = modelMatch.Groups.Count > 1 ? modelMatch.Groups[2].Value : "";
+
+                document.Children[0] = new LoveModelStatement(first.Start, first.Length + modelLine.Length, modelLine.Trim());
+
+                if (!string.IsNullOrWhiteSpace(remaining))
+                {
+                    second.Modify(second.Start + modelLine.Length, remaining.Length, remaining);
+                }
+                else
+                {
+                    document.Children.RemoveAt(1);
+                }
+            }
+        }
+
+        private void SimplifyChildren(LoveBlock block)
+        {
+            for (int i = 0; i < block.Children.Count; i++)
+            {
+                var child = block.Children[i];
+
+                // Go deeper
+                if (child is LoveBlock)
+                {
+                    SimplifyChildren(child as LoveBlock);
+                }
+
+                // Remove Bindings with only whitespace
+                if (child is LoveBindingBase)
+                {
+                    var cBinding = child as LoveBindingBase;
+
+                    if (string.IsNullOrEmpty(cBinding.Content.Trim()))
+                    {
+                        block.Children.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+                }
+
+                // Simplify child blocks
+                if (child.GetType() == typeof(LoveBlock))
+                {
+                    var cBlock = child as LoveBlock;
+
+                    // Remove if no children
+                    if (cBlock.Children.Count == 0)
+                    {
+                        block.Children.RemoveAt(i);
+                        i--;
+                        continue;
+                    }
+
+                    // Flatten if only one child
+                    if (cBlock.Children.Count == 1)
+                    {
+                        block.Children[i] = cBlock.Children[0];
+                    }
+                }
+            }
         }
 
         private LoveNode VisitNode(SyntaxTreeNode node)
@@ -100,17 +183,18 @@ namespace LoveMvc.Razor
 
             if (lBlock.Children.Count == 0) { return null; }
 
-            // Convert binding to markup expression if possible
+            // Simplify children
             for (int i = 0; i < lBlock.Children.Count; i++)
             {
-                var mChild = ConvertToMarkupExpression(lBlock.Children[i]);
+                var child = lBlock.Children[i];
 
-                if (mChild != null)
+                // Convert bindings to specific bindings if possible
+                if (child is LoveBinding)
                 {
-                    lBlock.Children[i] = mChild;
+                    lBlock.Children[i] = ConvertBinding(child as LoveBinding);
                 }
-            }
 
+            }
 
             // Convert to control blocks if Possible
             var cBlock = ConvertToControlBlock(lBlock);
@@ -119,20 +203,45 @@ namespace LoveMvc.Razor
             return lBlock;
         }
 
-        private LoveMarkupExpression ConvertToMarkupExpression(LoveNode loveNode)
+        private static LoveNode ConvertBinding(LoveBindingBase binding)
         {
-            var loveBinding = loveNode as LoveBinding;
+            var conversions = new List<Func<LoveBindingBase, LoveNode>>() {
+                ConvertToMarkupExpression,
+                CovertToNotBinding
+            };
 
-            if (loveBinding != null)
+            foreach (var conversion in conversions)
             {
-                var regexHtmlHelper = @"\s*Html\.";
+                var converted = conversion(binding);
 
-                var m = Regex.Match(loveBinding.Content, regexHtmlHelper);
-
-                if (m.Success)
+                if (converted != null)
                 {
-                    return new LoveMarkupExpression(loveBinding.Start, loveBinding.Length, loveBinding.Content);
+                    return converted;
                 }
+            }
+
+            return binding;
+        }
+
+        private static LoveNotBinding CovertToNotBinding(LoveBindingBase loveBinding)
+        {
+            if (loveBinding.Content.StartsWith("!"))
+            {
+                return new LoveNotBinding(loveBinding.Start + 1, loveBinding.Length - 1, loveBinding.Content.Substring(1));
+            }
+
+            return null;
+        }
+
+        private static LoveMarkupExpression ConvertToMarkupExpression(LoveBindingBase loveBinding)
+        {
+            var regexHtmlHelper = @"\s*Html\.";
+
+            var m = Regex.Match(loveBinding.Content, regexHtmlHelper);
+
+            if (m.Success)
+            {
+                return new LoveMarkupExpression(loveBinding.Start, loveBinding.Length, loveBinding.Content);
             }
 
             return null;
@@ -180,7 +289,7 @@ namespace LoveMvc.Razor
 
             if (controlType == "if")
             {
-                var statementBinding = new LoveBinding(firstBinding.Start + firstBinding.Content.IndexOf(statement), statement.Length, statement);
+                LoveBindingBase statementBinding = CreateStatement(firstBinding, statement);
 
                 return new LoveIfBlock(block.Start, block.Length,
                     statementBinding,
@@ -198,7 +307,7 @@ namespace LoveMvc.Razor
 
                     var itemNameSpan = new LoveSpan(firstBinding.Start + firstBinding.Content.IndexOf(itemName), itemName.Length, itemName);
 
-                    var statementBinding = new LoveBinding(firstBinding.Start + firstBinding.Content.IndexOf(statement), statement.Length, statement);
+                    LoveBindingBase statementBinding = CreateStatement(firstBinding, statement);
                     return new LoveForeachBlock(block.Start, block.Length,
                         itemNameSpan,
                         statementBinding,
@@ -211,6 +320,17 @@ namespace LoveMvc.Razor
             }
 
             return null;
+        }
+
+        private static LoveBindingBase CreateStatement(LoveBinding firstBinding, string statement)
+        {
+            LoveBindingBase statementBinding = new LoveBinding(firstBinding.Start + firstBinding.Content.IndexOf(statement), statement.Length, statement);
+            var converted = ConvertBinding(statementBinding);
+            if (converted is LoveBindingBase)
+            {
+                statementBinding = converted as LoveBindingBase;
+            }
+            return statementBinding;
         }
 
         private LoveNode VisitNonBlock(SyntaxTreeNode node)

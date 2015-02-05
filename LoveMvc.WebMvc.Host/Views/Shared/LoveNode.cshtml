@@ -34,6 +34,11 @@ else if (node is LoveBlock)
         Html.RenderPartial("LoveNode", c);
     }
 }
+else if (node is LoveNotBinding)
+{
+    LoveNotBinding n = node as LoveNotBinding;
+    <span class="binding">%!@(n.Content)</span>
+}
 else if (node is LoveBinding)
 {
     LoveBinding n = node as LoveBinding;

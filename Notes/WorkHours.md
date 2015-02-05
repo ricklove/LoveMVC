@@ -79,6 +79,14 @@
 
 - Fixed stack trace
 
+### 12:54-13:12
+
+- Designing Binding Mappings
+
+### 
+
+
+
 # Tasks
 
 

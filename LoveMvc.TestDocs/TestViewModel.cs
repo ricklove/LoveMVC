@@ -16,10 +16,15 @@ namespace LoveMvc.TestDocs
             name = name.EndsWith("ViewModel") ? name.Substring(0, name.Length - "ViewModel".Length) : name;
             name = name.EndsWith("Model") ? name.Substring(0, name.Length - "Model".Length) : name;
 
-            var targetName = name + ".love.cshtml";
+            var targetName = name + ".cshtml";
 
-            var assembly = GetType().GetTypeInfo().Assembly;
-            var stream = assembly.GetManifestResourceStream(targetName);
+            return GetViewDocument(targetName);
+        }
+
+        public static TextReader GetViewDocument(string name)
+        {
+            var assembly = typeof(TestViewModel).GetTypeInfo().Assembly;
+            var stream = assembly.GetManifestResourceStream(name);
 
             return new StreamReader(stream);
         }

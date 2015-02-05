@@ -33,10 +33,10 @@ namespace LoveMvc
     public class LoveScope
     {
         public LoveSpan Name { get; private set; }
-        public LoveBinding Expression { get; private set; }
+        public LoveBindingBase Expression { get; private set; }
         public LoveScopeType ScopeType { get; private set; }
 
-        public LoveScope(LoveSpan name, LoveBinding expression, LoveScopeType scopeType)
+        public LoveScope(LoveSpan name, LoveBindingBase expression, LoveScopeType scopeType)
         {
             Name = name;
             Expression = expression;
@@ -55,8 +55,8 @@ namespace LoveMvc
 
         public int ID { get; private set; }
 
-        public int Start { get; private set; }
-        public int Length { get; private set; }
+        public int Start { get; protected set; }
+        public int Length { get; protected set; }
 
         public LoveBlock Parent { get; set; }
         public List<LoveScope> GetScopes()
@@ -170,9 +170,24 @@ namespace LoveMvc
         }
     }
 
+    public class LoveModelStatement : LoveNode
+    {
+        public string Model { get; private set; }
+        public LoveModelStatement(int start, int length, string model)
+            : base(start, length)
+        {
+            Model = model;
+        }
+
+        public override string ToString()
+        {
+            return "@model " + Model;
+        }
+    }
+
     public class LoveSpan : LoveNode
     {
-        public string Content { get; private set; }
+        public string Content { get; set; }
 
         public LoveSpan(int start, int length, string content)
             : base(start, length)
@@ -183,6 +198,13 @@ namespace LoveMvc
         public override string ToString()
         {
             return Content;
+        }
+
+        public void Modify(int start, int length, string content)
+        {
+            Start = start;
+            Length = length;
+            Content = content;
         }
     }
 
@@ -207,9 +229,9 @@ namespace LoveMvc
         }
     }
 
-    public class LoveBinding : LoveSpan
+    public abstract class LoveBindingBase : LoveSpan
     {
-        public LoveBinding(int start, int length, string content)
+        public LoveBindingBase(int start, int length, string content)
             : base(start, length, content)
         {
         }
@@ -220,12 +242,33 @@ namespace LoveMvc
         }
     }
 
+    public class LoveBinding : LoveBindingBase
+    {
+        public LoveBinding(int start, int length, string content)
+            : base(start, length, content)
+        {
+        }
+    }
+
+    public class LoveNotBinding : LoveBindingBase
+    {
+        public LoveNotBinding(int start, int length, string content)
+            : base(start, length, content)
+        {
+        }
+
+        public override string ToString()
+        {
+            return "{{{!" + Content + "}}}";
+        }
+    }
+
     public class LoveControlBlock : LoveBlock
     {
-        public LoveBinding Expression { get; set; }
+        public LoveBindingBase Expression { get; set; }
         public LoveBlock Body { get; set; }
 
-        public LoveControlBlock(int start, int length, LoveBinding expression, LoveBlock body)
+        public LoveControlBlock(int start, int length, LoveBindingBase expression, LoveBlock body)
             : base(start, length)
         {
             Expression = expression;
@@ -238,7 +281,7 @@ namespace LoveMvc
 
     public class LoveIfBlock : LoveControlBlock
     {
-        public LoveIfBlock(int start, int length, LoveBinding expression, LoveBlock body) :
+        public LoveIfBlock(int start, int length, LoveBindingBase expression, LoveBlock body) :
             base(start, length, expression, body)
         {
         }
@@ -252,7 +295,7 @@ namespace LoveMvc
     {
         public LoveSpan ItemName { get; private set; }
 
-        public LoveForeachBlock(int start, int length, LoveSpan itemName, LoveBinding expression, LoveBlock body) :
+        public LoveForeachBlock(int start, int length, LoveSpan itemName, LoveBindingBase expression, LoveBlock body) :
             base(start, length, expression, body)
         {
             ItemName = itemName;
