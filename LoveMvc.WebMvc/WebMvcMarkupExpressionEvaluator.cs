@@ -28,6 +28,7 @@ namespace LoveMvc.WebMvc
 
         public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model, Action<string, object> doRenderExpression)
         {
+            //Test();
 
             if (expression.Content.Trim().StartsWith("Html."))
             {
@@ -77,6 +78,20 @@ namespace LoveMvc.WebMvc
             return null;
         }
 
+        private void Test()
+        {
+            var model = new LoveMvc.WebMvc.TestDocs.TodosViewModel();
+
+            var sb = new StringBuilder();
+            var writer = new StringWriter(sb);
+            var html = CreateHtmlHelper(model, writer);
+
+            html.DisplayFor(m => m.NewTodoText);
+
+            var result = sb.ToString();
+
+        }
+
         private string CreatePartialView<T>(T model, string content, IEnumerable<LoveScope> scopes)
         {
             var scopePreSB = new StringBuilder();
@@ -124,7 +139,8 @@ namespace LoveMvc.WebMvc
         {
             //var controllerContext = FakeControllerContext.CreateControllerContext();
             var controllerContext = ControllerContext;
-            return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(), new TempDataDictionary(), writer), new ViewPage()); ;
+            //return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(), new TempDataDictionary(), writer), new ViewPage()); ;
+            return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(model), new TempDataDictionary(), writer), new ViewPage()); ;
         }
 
 
