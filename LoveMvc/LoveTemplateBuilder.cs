@@ -10,11 +10,12 @@ namespace LoveMvc
     {
         public static LoveTemplate Build(ITemplateParser parser, IMarkupExpressionEvaluator evaluator, IViewViewModelPair pair)
         {
-            var results = parser.Parse(pair.ViewSource);
+            var syntaxTree = parser.Parse(pair.ViewSource);
+            syntaxTree.DecorateTree();
 
             var expressions = new List<LoveNode>();
 
-            foreach (var n in results.Flatten())
+            foreach (var n in syntaxTree.Flatten())
             {
                 if (n is LoveMarkupExpression)
                 {
@@ -29,12 +30,18 @@ namespace LoveMvc
                 n.Parent.Replace(expression, evaluated);
             }
 
-            throw new NotImplementedException();
+            return new LoveTemplate(syntaxTree);
         }
     }
 
     public class LoveTemplate
     {
+        private LoveSyntaxTree _syntaxTree;
+        public LoveBlock Document { get { return _syntaxTree.Document; } }
 
+        public LoveTemplate(LoveSyntaxTree syntaxTree)
+        {
+            _syntaxTree = syntaxTree;
+        }
     }
 }

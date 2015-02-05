@@ -14,14 +14,13 @@ namespace LoveMvc
             Document = document;
         }
 
-        public void DecorateTree()
+        internal void DecorateTree()
         {
             Document.DecorateChildren();
         }
 
         public IEnumerable<LoveNode> Flatten()
         {
-            DecorateTree();
             return Document.Flatten();
         }
 

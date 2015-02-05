@@ -62,7 +62,7 @@
 
 - Create TestDocs project
 
-### 8:06-8:15
+### 8:06-8:20
 
 - Create LoveTemplateBuilder
 
