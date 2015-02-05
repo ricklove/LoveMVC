@@ -30,7 +30,11 @@ namespace LoveMvc
                 n.Parent.Replace(expression, evaluated);
             }
 
-            return new LoveTemplate(syntaxTree);
+            var t = new LoveTemplate(syntaxTree);
+
+            var tText = t.ToString();
+
+            return t;
         }
     }
 
@@ -42,6 +46,16 @@ namespace LoveMvc
         public LoveTemplate(LoveSyntaxTree syntaxTree)
         {
             _syntaxTree = syntaxTree;
+        }
+
+        public override string ToString()
+        {
+            return _syntaxTree.ToString();
+        }
+
+        public IEnumerable<LoveNode> Flatten()
+        {
+            return _syntaxTree.Flatten();
         }
     }
 }

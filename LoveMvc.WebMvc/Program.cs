@@ -16,12 +16,12 @@ namespace LoveMvc.WebMvc
             //Host(FakeControllerContext.CreateControllerContext(), );
         }
 
-        public static void Host(System.Web.Mvc.ControllerContext controllerContext, IViewViewModelPair source)
+        public static LoveTemplate Host(System.Web.Mvc.ControllerContext controllerContext, IViewViewModelPair source)
         {
             var parser = new RazorParser();
             var evaluator = new WebMvcMarkupExpressionEvaluator(controllerContext);
 
-            LoveTemplateBuilder.Build(parser, evaluator, source);
+            return LoveTemplateBuilder.Build(parser, evaluator, source);
         }
     }
 }

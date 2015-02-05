@@ -80,6 +80,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Site.css" />
     <Content Include="Global.asax" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -93,6 +94,12 @@
   <ItemGroup>
     <Content Include="Views\web.config" />
     <Content Include="packages.config" />
+    <Content Include="Views\_ViewStart.cshtml" />
+    <Content Include="Views\Shared\_Layout.cshtml" />
+    <Content Include="Views\Shared\LoveNode.cshtml" />
+    <Content Include="Views\Shared\Text.cshtml" />
+    <Content Include="Views\Shared\LoveRoot.cshtml" />
+    <Content Include="Views\Shared\TestResults.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -115,7 +122,7 @@
       <Name>LoveMvc.WebMvc</Name>
     </ProjectReference>
     <ProjectReference Include="..\LoveMvc\LoveMvc.csproj">
-      <Project>{1f0aa8a5-3dbd-46f5-8c55-fc0d1ea8d458}</Project>
+      <Project>{13d4ab9c-5fba-430c-8f1a-bde3e3732f56}</Project>
       <Name>LoveMvc</Name>
     </ProjectReference>
   </ItemGroup>

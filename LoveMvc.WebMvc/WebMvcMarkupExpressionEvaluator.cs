@@ -40,7 +40,7 @@ namespace LoveMvc.WebMvc
                 var html = CreateHtmlHelper(model, writer);
                 html.RenderPartial(mainPath, model);
 
-                var result = sb.ToString();
+                var result = sb.ToString().Trim();
 
                 // TODO: Parse the markup
                 var b = new LoveBlock(0, 0);

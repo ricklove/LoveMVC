@@ -1,0 +1,52 @@
+﻿@using LoveMvc
+@model LoveNode
+
+@{
+    LoveNode node = Model;
+}
+
+@if (node is LoveForeachBlock)
+{
+    LoveForeachBlock n = node as LoveForeachBlock;
+
+    <span class="foreach">
+        <span>%foreach( @n.ItemName in @Html.Partial("LoveNode", n.Expression) ) {</span>
+        @Html.Partial("LoveNode", n.Body)
+        <span>}</span>
+    </span>
+}
+else if (node is LoveIfBlock)
+{
+    LoveIfBlock n = node as LoveIfBlock;
+
+    <span class="if">
+        <span>%if( @Html.Partial("LoveNode", n.Expression) ) {</span>
+        @Html.Partial("LoveNode", n.Body)
+        <span>}</span>
+    </span>
+}
+else if (node is LoveBlock)
+{
+    var block = node as LoveBlock;
+
+    foreach (var c in block.Children)
+    {
+        Html.RenderPartial("LoveNode", c);
+    }
+}
+else if (node is LoveBinding)
+{
+    LoveBinding n = node as LoveBinding;
+    <span class="binding">%@n.Content</span>
+}
+else if (node is LoveMarkupExpression)
+{
+    LoveMarkupExpression n = node as LoveMarkupExpression;
+    <span class="expression">%@n.Content</span>
+}
+else if (node is LoveSpan)
+{
+    LoveSpan n = node as LoveSpan;
+    <span class="span">@n.Content</span>
+}
+
