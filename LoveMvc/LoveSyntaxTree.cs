@@ -14,10 +14,40 @@ namespace LoveMvc
             Document = document;
         }
 
+        public void DecorateTree()
+        {
+            Document.DecorateChildren();
+        }
+
+        public IEnumerable<LoveNode> Flatten()
+        {
+            DecorateTree();
+            return Document.Flatten();
+        }
+
         public override string ToString()
         {
             return Document.ToString();
         }
+    }
+
+    public class LoveScope
+    {
+        public LoveSpan Name { get; private set; }
+        public LoveBinding Expression { get; private set; }
+        public LoveScopeType ScopeType { get; private set; }
+
+        public LoveScope(LoveSpan name, LoveBinding expression, LoveScopeType scopeType)
+        {
+            Name = name;
+            Expression = expression;
+            ScopeType = scopeType;
+        }
+    }
+
+    public enum LoveScopeType
+    {
+        Foreach
     }
 
     public class LoveNode
@@ -28,6 +58,32 @@ namespace LoveMvc
 
         public int Start { get; private set; }
         public int Length { get; private set; }
+
+        public LoveBlock Parent { get; set; }
+        public List<LoveScope> GetScopes()
+        {
+            var scopes = new List<LoveScope>();
+            GetScopesInner(scopes);
+
+            return scopes;
+        }
+
+        private void GetScopesInner(List<LoveScope> scopes)
+        {
+            if (Parent != null)
+            {
+                // Add parent's own scopes first
+                Parent.GetScopesInner(scopes);
+
+                // Add scope from parent itself
+                var pScope = Parent.GetThisScope();
+
+                if (pScope != null)
+                {
+                    scopes.Add(pScope);
+                }
+            }
+        }
 
         public LoveNode(int start, int length)
         {
@@ -65,22 +121,40 @@ namespace LoveMvc
             return sb.ToString();
         }
 
-        public IEnumerable<LoveNodeWithContext> Flatten(LoveBlock parent = null)
+        internal void DecorateChildren()
         {
-            yield return new LoveNodeWithContext(this, parent);
+            foreach (var c in Children)
+            {
+                c.Parent = this;
+
+                if (c is LoveBlock)
+                {
+                    (c as LoveBlock).DecorateChildren();
+                }
+            }
+        }
+
+        protected internal virtual LoveScope GetThisScope()
+        {
+            return null;
+        }
+
+        internal IEnumerable<LoveNode> Flatten()
+        {
+            yield return this;
 
             foreach (var c in Children)
             {
                 if (c is LoveBlock)
                 {
-                    foreach (var cItem in (c as LoveBlock).Flatten(this))
+                    foreach (var cItem in (c as LoveBlock).Flatten())
                     {
                         yield return cItem;
                     }
                 }
                 else
                 {
-                    yield return new LoveNodeWithContext(c, this);
+                    yield return c;
                 }
             }
         }
@@ -94,18 +168,6 @@ namespace LoveMvc
                     Children[i] = replacement;
                 }
             }
-        }
-    }
-
-    public class LoveNodeWithContext
-    {
-        public LoveNode Node { get; private set; }
-        public LoveBlock Parent { get; private set; }
-
-        public LoveNodeWithContext(LoveNode node, LoveBlock parent)
-        {
-            Node = node;
-            Parent = parent;
         }
     }
 
@@ -173,7 +235,6 @@ namespace LoveMvc
             Children.Add(expression);
             Children.Add(body);
         }
-
     }
 
     public class LoveIfBlock : LoveControlBlock
@@ -196,6 +257,11 @@ namespace LoveMvc
             base(start, length, expression, body)
         {
             ItemName = itemName;
+        }
+
+        protected internal override LoveScope GetThisScope()
+        {
+            return new LoveScope(ItemName, Expression, LoveScopeType.Foreach);
         }
 
         public override string ToString()

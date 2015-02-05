@@ -33,12 +33,27 @@ namespace LoveMvc.WebMvc
             if (expression.Content.Trim().StartsWith("Html."))
             {
                 // Register view
-                var pView = CreatePartialView(model, "@{" + expression.Content + ";}");
-                var mainPath = _provider.RegisterExpression("MAIN", pView);
+                var pView = CreatePartialView(model, "@" + expression.Content + "", expression.GetScopes());
+                var mainPath = _provider.RegisterExpression("H_" + expression.Content.GetHashCode(), pView);
+
+                // This works to render to client
+
+                //HttpResponse response = HttpContext.Current.Response;
+                //var oldFilter = response.Filter;
+                //response.Flush();
+
+                //var filter = new MemoryStream();
+                //response.Filter = filter;
 
                 //doRenderExpression(mainPath, model);
 
+                //response.Flush();
+                //response.Filter = oldFilter;
 
+                //var result = new StreamReader(filter).ReadToEnd();
+                //var result = "";
+
+                // Trying to intercept response
                 var sb = new StringBuilder();
                 var writer = new StringWriter(sb);
                 var html = CreateHtmlHelper(model, writer);
@@ -63,8 +78,28 @@ namespace LoveMvc.WebMvc
             return null;
         }
 
-        private string CreatePartialView<T>(T model, string content)
+        private string CreatePartialView<T>(T model, string content, IEnumerable<LoveScope> scopes)
         {
+            var scopePreSB = new StringBuilder();
+
+            foreach (var s in scopes)
+            {
+                if (s.ScopeType == LoveScopeType.Foreach)
+                {
+                    scopePreSB.AppendFormat(@"@foreach( var {0} in {1} ) {{", s.Name.Content, s.Expression.Content);
+                }
+            }
+
+            var scopePostSB = new StringBuilder();
+
+            foreach (var s in scopes.Reverse())
+            {
+                if (s.ScopeType == LoveScopeType.Foreach)
+                {
+                    scopePostSB.Append("}");
+                }
+            }
+
             return string.Format(@"
 @using System.Web.Mvc;
 @using System.Web.Mvc.Ajax;
@@ -76,8 +111,14 @@ namespace LoveMvc.WebMvc
 @{{
     Layout = null;
 }}
+
+{2}
+
 {1}
-", model.GetType().FullName, content);
+
+{3}
+
+", model.GetType().FullName, content, scopePreSB.ToString(), scopePostSB.ToString());
         }
 
         public HtmlHelper<T> CreateHtmlHelper<T>(T model, StringWriter writer)

@@ -17,7 +17,7 @@ namespace LoveMvc.WebMvc.Host.Controllers
                 result.ExecuteResult(ControllerContext);
 
                 // TESTING
-                Response.End();
+                //Response.End();
             });
             return null;
         }

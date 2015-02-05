@@ -22,6 +22,8 @@ namespace LoveMvc.Razor
             var tree = VisitTree(results);
             //var treeText = tree.ToString();
 
+            tree.DecorateTree();
+
             return tree;
         }
 

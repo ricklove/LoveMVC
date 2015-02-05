@@ -64,25 +64,21 @@ namespace LoveMvc.WebMvc
             var model = new TodosViewModel();
             var evaluator = new WebMvcMarkupExpressionEvaluator(controllerContext);
 
-            var expressions = new List<LoveNodeWithContext>();
+            var expressions = new List<LoveNode>();
 
-            foreach (var nWithContext in results.Document.Flatten())
+            foreach (var n in results.Flatten())
             {
-                var n = nWithContext.Node;
-
                 if (n is LoveMarkupExpression)
                 {
-                    expressions.Add(nWithContext);
+                    expressions.Add(n);
                 }
             }
 
-            foreach (var nWithContext in expressions)
+            foreach (var n in expressions)
             {
-                var n = nWithContext.Node;
-
                 var expression = n as LoveMarkupExpression;
                 var evaluated = evaluator.Evaluate(expression, model, doRenderView);
-                nWithContext.Parent.Replace(expression, evaluated);
+                n.Parent.Replace(expression, evaluated);
             }
         }
     }
