@@ -19,6 +19,7 @@ namespace LoveMvc
 
     public interface IViewViewModelPair
     {
+        string Name { get; }
         object Model { get; }
         TextReader ViewSource { get; }
     }
@@ -26,14 +27,17 @@ namespace LoveMvc
     public class ViewViewModelPair : IViewViewModelPair
     {
         public object Model { get; private set; }
-
+        public string Name { get; private set; }
         private Func<TextReader> _doGetViewSource;
         public TextReader ViewSource { get { return _doGetViewSource(); } }
 
-        public ViewViewModelPair(object model, Func<TextReader> doGetViewSource)
+        public ViewViewModelPair(object model, Func<TextReader> doGetViewSource, string name = "")
         {
             Model = model;
             _doGetViewSource = doGetViewSource;
+            Name = name;
         }
+
+
     }
 }

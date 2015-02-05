@@ -46,6 +46,13 @@ namespace LoveMvc.Razor
             var first = document.Children[0] as LoveSpan;
             var second = document.Children[1] as LoveSpan;
 
+            // Go into 2nd child if block
+            if (document.Children[1].GetType() == typeof(LoveBlock))
+            {
+                var secondBlock = (document.Children[1] as LoveBlock);
+                second = secondBlock.Children.FirstOrDefault() as LoveSpan;
+            }
+
             if (first == null || second == null) { return; }
 
             var modelMatch = Regex.Match(second.Content, @"^(\s*[A-Za-z0-9\.]+(?:\r\n)?)([\s\S]*)?$");
@@ -63,7 +70,8 @@ namespace LoveMvc.Razor
                 }
                 else
                 {
-                    document.Children.RemoveAt(1);
+                    second.Modify(0, 0, "");
+                    SimplifyChildren(document);
                 }
             }
         }
@@ -196,9 +204,11 @@ namespace LoveMvc.Razor
 
             }
 
-            // Convert to control blocks if Possible
-            var cBlock = ConvertToControlBlock(lBlock);
-            if (cBlock != null) { return cBlock; }
+            ConvertChildrenToControlBlocks(lBlock);
+
+            //// Convert to control blocks if Possible
+            //var cBlock = ConvertToControlBlock(lBlock);
+            //if (cBlock != null) { return cBlock; }
 
             return lBlock;
         }
@@ -247,51 +257,82 @@ namespace LoveMvc.Razor
             return null;
         }
 
-        private LoveControlBlock ConvertToControlBlock(LoveBlock block)
+        private void ConvertChildrenToControlBlocks(LoveBlock block)
         {
-            if (block.Children.Count == 0) { return null; }
+            if (block.Children.Count == 0) { return; }
 
-            var firstNode = block.Children.First();
-            if (firstNode is LoveBinding)
+            // Find inner most control block
+
+            var regexControlStart = @"\s*((?:if)|(?:foreach))\s*\((.*)\)\s*({)?\s*";
+            var regexControlEnd = @"\s*}\s*";
+
+            var childrenWithIndex = block.Children
+                .Select((Child, Index) => new { Child, Index }).ToList();
+
+            var controlBlockStarts = childrenWithIndex
+                .Where(c => c.Child is LoveBinding && Regex.IsMatch((c.Child as LoveBinding).Content, regexControlStart)).ToList();
+            var controlBlockEnds = childrenWithIndex
+                .Where(c => c.Child is LoveBinding && Regex.IsMatch((c.Child as LoveBinding).Content, regexControlEnd)).ToList();
+
+            if (controlBlockStarts.Any())
             {
-                var firstBinding = firstNode as LoveBinding;
+                var lastStart = controlBlockStarts.Last();
+                var nextEnd = controlBlockEnds.Where(c => c.Index > lastStart.Index).FirstOrDefault();
 
-                var regexControl = @"\s*((?:if)|(?:foreach))\s*\((.*)\)\s*({)?\s*";
+                var blockSet = childrenWithIndex.Where(c => c.Index >= lastStart.Index && c.Index <= nextEnd.Index).ToList();
 
-                var m = Regex.Match(firstBinding.Content, regexControl);
-                if (m.Success)
+                var m = Regex.Match((lastStart.Child as LoveBinding).Content, regexControlStart);
+
+                var controlType = m.Groups[1].Value;
+                var statement = m.Groups[2].Value;
+                var openBraces = m.Groups.Count > 2 ? m.Groups[3].Value : "";
+
+                LoveBlock controlBlock = CreateControlBlock(blockSet.Select(c => c.Child).ToList(), controlType, statement, openBraces);
+
+                if (controlBlock == null)
                 {
-                    var controlType = m.Groups[1].Value;
-                    var statement = m.Groups[2].Value;
-                    var openBraces = m.Groups.Count > 2 ? m.Groups[3].Value : "";
-
-                    return CreateControlBlock(block, firstBinding, controlType, statement, openBraces);
+                    // If failed, stick it in a regular block (to avoid a loop)
+                    controlBlock = new LoveBlock(lastStart.Child.Start, blockSet.Sum(b => b.Child.Length));
+                    controlBlock.Children.AddRange(blockSet.Select(c => c.Child));
                 }
+
+                // Switch the old blocks for the new
+                for (int i = 0; i < blockSet.Count; i++)
+                {
+                    block.Children.RemoveAt(blockSet.First().Index);
+                }
+
+                block.Children.Add(controlBlock);
             }
 
-            return null;
+            if (controlBlockStarts.Count() > 1)
+            {
+                // Repeat if needed
+                ConvertChildrenToControlBlocks(block);
+            }
         }
 
-        private static LoveControlBlock CreateControlBlock(LoveBlock block, LoveBinding firstBinding, string controlType, string statement, string openBraces)
+        private LoveControlBlock CreateControlBlock(List<LoveNode> blockSet, string controlType, string statement, string openBraces)
         {
-            var lastChild = block.Children.Last();
+            var controlStart = blockSet.First() as LoveBinding;
+            var controlEnd = blockSet.Last();
 
             var hasClosingBraces = openBraces == "{"
-                && lastChild is LoveBinding
-                && (lastChild as LoveBinding).Content.Trim() == "}";
+                && controlEnd is LoveBinding
+                && (controlEnd as LoveBinding).Content.Trim() == "}";
 
-            var bodyLength = block.Children.Count - 1;
+            var bodyLength = blockSet.Count - 1;
             bodyLength -= hasClosingBraces ? 1 : 0;
 
-            var bodyChildren = block.Children.Skip(1).Take(bodyLength);
+            var bodyChildren = blockSet.Skip(1).Take(bodyLength);
             var bodyBlock = new LoveBlock(bodyChildren.First().Start, bodyChildren.Sum(c => c.Length));
             bodyBlock.Children.AddRange(bodyChildren);
 
             if (controlType == "if")
             {
-                LoveBindingBase statementBinding = CreateStatement(firstBinding, statement);
+                LoveBindingBase statementBinding = CreateStatement(controlStart, statement);
 
-                return new LoveIfBlock(block.Start, block.Length,
+                return new LoveIfBlock(controlStart.Start, controlEnd.Start - controlStart.Start + controlEnd.Length,
                     statementBinding,
                     bodyBlock);
             }
@@ -305,10 +346,10 @@ namespace LoveMvc.Razor
                     var itemName = m.Groups[1].Value;
                     statement = m.Groups[2].Value;
 
-                    var itemNameSpan = new LoveSpan(firstBinding.Start + firstBinding.Content.IndexOf(itemName), itemName.Length, itemName);
+                    var itemNameSpan = new LoveSpan(controlStart.Start + controlStart.Content.IndexOf(itemName), itemName.Length, itemName);
 
-                    LoveBindingBase statementBinding = CreateStatement(firstBinding, statement);
-                    return new LoveForeachBlock(block.Start, block.Length,
+                    LoveBindingBase statementBinding = CreateStatement(controlStart, statement);
+                    return new LoveForeachBlock(controlStart.Start, controlEnd.Start - controlStart.Start + controlEnd.Length,
                         itemNameSpan,
                         statementBinding,
                         bodyBlock);
@@ -321,6 +362,81 @@ namespace LoveMvc.Razor
 
             return null;
         }
+
+        //private LoveControlBlock ConvertToControlBlock(LoveBlock block)
+        //{
+        //    if (block.Children.Count == 0) { return null; }
+
+        //    var firstNode = block.Children.First();
+        //    if (firstNode is LoveBinding)
+        //    {
+        //        var firstBinding = firstNode as LoveBinding;
+
+        //        var regexControl = @"\s*((?:if)|(?:foreach))\s*\((.*)\)\s*({)?\s*";
+
+        //        var m = Regex.Match(firstBinding.Content, regexControl);
+        //        if (m.Success)
+        //        {
+        //            var controlType = m.Groups[1].Value;
+        //            var statement = m.Groups[2].Value;
+        //            var openBraces = m.Groups.Count > 2 ? m.Groups[3].Value : "";
+
+        //            return CreateControlBlock(block, firstBinding, controlType, statement, openBraces);
+        //        }
+        //    }
+
+        //    return null;
+        //}
+
+        //private static LoveControlBlock CreateControlBlock(LoveBlock block, LoveBinding firstBinding, string controlType, string statement, string openBraces)
+        //{
+        //    var lastChild = block.Children.Last();
+
+        //    var hasClosingBraces = openBraces == "{"
+        //        && lastChild is LoveBinding
+        //        && (lastChild as LoveBinding).Content.Trim() == "}";
+
+        //    var bodyLength = block.Children.Count - 1;
+        //    bodyLength -= hasClosingBraces ? 1 : 0;
+
+        //    var bodyChildren = block.Children.Skip(1).Take(bodyLength);
+        //    var bodyBlock = new LoveBlock(bodyChildren.First().Start, bodyChildren.Sum(c => c.Length));
+        //    bodyBlock.Children.AddRange(bodyChildren);
+
+        //    if (controlType == "if")
+        //    {
+        //        LoveBindingBase statementBinding = CreateStatement(firstBinding, statement);
+
+        //        return new LoveIfBlock(block.Start, block.Length,
+        //            statementBinding,
+        //            bodyBlock);
+        //    }
+        //    else if (controlType == "foreach")
+        //    {
+        //        var regexForeach = @"\s*(\S+)\s+in\s+(\S+)\s*";
+
+        //        var m = Regex.Match(statement, regexForeach);
+        //        if (m.Success)
+        //        {
+        //            var itemName = m.Groups[1].Value;
+        //            statement = m.Groups[2].Value;
+
+        //            var itemNameSpan = new LoveSpan(firstBinding.Start + firstBinding.Content.IndexOf(itemName), itemName.Length, itemName);
+
+        //            LoveBindingBase statementBinding = CreateStatement(firstBinding, statement);
+        //            return new LoveForeachBlock(block.Start, block.Length,
+        //                itemNameSpan,
+        //                statementBinding,
+        //                bodyBlock);
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
+
+        //    return null;
+        //}
 
         private static LoveBindingBase CreateStatement(LoveBinding firstBinding, string statement)
         {

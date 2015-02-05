@@ -15,6 +15,9 @@ namespace LoveMvc.WebMvc.Host.Controllers
 
             foreach (var doc in LoveMvc.TestDocs.WebMvc._TestDocs.GetDocs())
             {
+                Response.Write("<h2>" + doc.Name + "</h2>");
+                Response.Flush();
+
                 var source = doc.ViewSource.ReadToEnd();
                 var sourceView = ControllerContext.RenderPartialViewToString("Text", source);
                 Response.Write(sourceView);

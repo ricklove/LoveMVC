@@ -14,11 +14,18 @@ namespace LoveMvc.TestDocs.WebMvc
 
             var todosModel = new TodosViewModel();
 
-            docs.Add(new ViewViewModelPair(todosModel, GetViewDocument("PureMarkup")));
-            docs.Add(new ViewViewModelPair(todosModel, GetViewDocument("NotBinding")));
+            docs.Add(GetPair(todosModel, "PureMarkup"));
+            docs.Add(GetPair(todosModel, "NotBinding"));
+            docs.Add(GetPair(todosModel, "IfBlock"));
+            docs.Add(GetPair(todosModel, "IfInTag"));
             docs.Add(todosModel);
 
             return docs;
+        }
+
+        private static IViewViewModelPair GetPair(object model, string name)
+        {
+            return new ViewViewModelPair(model, GetViewDocument(name), name);
         }
 
         private static Func<System.IO.TextReader> GetViewDocument(string name)

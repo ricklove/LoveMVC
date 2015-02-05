@@ -4,11 +4,23 @@
 
 }
 
-<div style="padding:10px; margin:10px; border:1px solid black">
-    <h3>Tests Results</h3>
+<div style="padding:10px; margin:10px; background-color:darkblue">
+    <h3>
+        @if (!Model.Any())
+        {
+            <span style="color:lime">Tests Passed!</span>
+        }
+        else
+        {
+            <span style="color:red">Tests Failed!</span>
+        }
+    </h3>
+
+
+
     @foreach (var ex in Model)
     {
-        <div style="border: solid 1px red">
+        <div style="background: white ; color:red; margin:5px; border:5px">
             @ex.ToString()
         </div>
     }

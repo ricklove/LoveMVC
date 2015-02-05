@@ -12,13 +12,19 @@ namespace LoveMvc.TestDocs
     {
         public TextReader GetViewDocument()
         {
-            var name = GetType().FullName;
-            name = name.EndsWith("ViewModel") ? name.Substring(0, name.Length - "ViewModel".Length) : name;
-            name = name.EndsWith("Model") ? name.Substring(0, name.Length - "Model".Length) : name;
+            var name = GetName();
 
             var targetName = name + ".cshtml";
 
             return GetViewDocument(targetName);
+        }
+
+        private string GetName()
+        {
+            var name = GetType().FullName;
+            name = name.EndsWith("ViewModel") ? name.Substring(0, name.Length - "ViewModel".Length) : name;
+            name = name.EndsWith("Model") ? name.Substring(0, name.Length - "Model".Length) : name;
+            return name;
         }
 
         public static TextReader GetViewDocument(string name)
@@ -27,6 +33,11 @@ namespace LoveMvc.TestDocs
             var stream = assembly.GetManifestResourceStream(name);
 
             return new StreamReader(stream);
+        }
+
+        public string Name
+        {
+            get { return GetName(); }
         }
 
         public object Model
