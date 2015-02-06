@@ -24,12 +24,12 @@ namespace LoveMvc.WebMvc
             _controllerContext = controllerContext;
         }
 
-        public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model) where T : new()
+        public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model)
         {
             return Evaluate(expression, model, false);
         }
 
-        public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model, bool isSecondTry) where T : new()
+        public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model, bool isSecondTry)
         {
             if (expression.Content.Trim().StartsWith("Html."))
             {
@@ -40,24 +40,24 @@ namespace LoveMvc.WebMvc
                 var normal = results.NormalResults;
                 var simple = results.SimpleResults;
 
-                // WARNING: This is buggy!
-                // Ensure model has data at relevant property
-                // TODO: Create own object and decorate with DataAnotations using provider:
-                // http://stackoverflow.com/questions/11964956/how-can-i-register-a-custom-modelmetadataprovider-with-simple-injector-in-mvc3
-                // http://haacked.com/archive/2011/07/14/model-metadata-and-validation-localization-using-conventions.aspx/
-                if (!isSecondTry && string.IsNullOrWhiteSpace(simple))
-                {
-                    try
-                    {
-                        var nModel = CreateModelWithSpecificValue<T>(model, simpleExpression.ReplaceStart("Model", "this"));
-                        return Evaluate(expression, nModel, true);
-                    }
-                    catch
-                    {
-                        // Hey at least we tried
-                        var breakdance = false;
-                    }
-                }
+                //// WARNING: This is buggy!
+                //// Ensure model has data at relevant property
+                //// TODO: Create own object and decorate with DataAnotations using provider:
+                //// http://stackoverflow.com/questions/11964956/how-can-i-register-a-custom-modelmetadataprovider-with-simple-injector-in-mvc3
+                //// http://haacked.com/archive/2011/07/14/model-metadata-and-validation-localization-using-conventions.aspx/
+                //if (!isSecondTry && string.IsNullOrWhiteSpace(simple))
+                //{
+                //    try
+                //    {
+                //        var nModel = CreateModelWithSpecificValue<T>(model, simpleExpression.ReplaceStart("Model", "this"));
+                //        return Evaluate(expression, nModel, true);
+                //    }
+                //    catch
+                //    {
+                //        // Hey at least we tried
+                //        var breakdance = false;
+                //    }
+                //}
 
                 // Parse the markup
                 var mappedBlock = HtmlHelperBindingMapper.MapBinding(expression, normal, simple, simpleExpression);

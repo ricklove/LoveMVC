@@ -8,9 +8,9 @@ namespace LoveMvc.TestDocs.WebMvc
 {
     public static class _TestDocs
     {
-        public static List<IViewViewModelPair> GetDocs()
+        public static List<IViewViewModelPair<TodosViewModel>> GetDocs()
         {
-            var docs = new List<IViewViewModelPair>();
+            var docs = new List<IViewViewModelPair<TodosViewModel>>();
 
             var todosModel = new TodosViewModel();
 
@@ -22,14 +22,14 @@ namespace LoveMvc.TestDocs.WebMvc
             docs.Add(GetPair(todosModel, "NotBinding"));
             docs.Add(GetPair(todosModel, "IfBlock"));
             docs.Add(GetPair(todosModel, "IfInTag"));
-            docs.Add(todosModel);
+            docs.Add(GetPair(todosModel, "Todos"));
 
             return docs;
         }
 
-        private static IViewViewModelPair GetPair(object model, string name)
+        private static IViewViewModelPair<T> GetPair<T>(T model, string name)
         {
-            return new ViewViewModelPair(model, GetViewDocument(name), name);
+            return new ViewViewModelPair<T>(model, GetViewDocument(name), name);
         }
 
         private static Func<System.IO.TextReader> GetViewDocument(string name)

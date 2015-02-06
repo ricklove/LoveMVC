@@ -62,16 +62,16 @@ namespace LoveMvc.WebMvc
         {
         }
 
-        public string RenderView<T>(IViewViewModelPair viewViewModelPair) where T : new()
+        public string RenderView<T>(IViewViewModelPair<T> viewViewModelPair)
         {
-            var partialView = CreatePartialView((T)viewViewModelPair.Model, viewViewModelPair.ViewSource.ReadToEnd());
-            var result = Render<T>((T)viewViewModelPair.Model, partialView);
+            var partialView = CreatePartialView(viewViewModelPair.Model, viewViewModelPair.ViewSource.ReadToEnd());
+            var result = Render(viewViewModelPair.Model, partialView);
             var normalResults = GetTextBetweenTags(result, "START_NORMAL", "END_NORMAL");
 
             return normalResults;
         }
 
-        public ExpressionEvaluationResults GetExpressionEvaluation<T>(T model, string normal, string simple, List<LoveScope> scopes) where T : new()
+        public ExpressionEvaluationResults GetExpressionEvaluation<T>(T model, string normal, string simple, List<LoveScope> scopes)
         {
             // Register view
             var partialView = CreateExpressionEvaluationView(model, "@" + normal + "", "@" + simple + "", scopes);
@@ -82,7 +82,7 @@ namespace LoveMvc.WebMvc
             return new ExpressionEvaluationResults(normalResults, simpleResults);
         }
 
-        private string Render<T>(T model, string partialView) where T : new()
+        private string Render<T>(T model, string partialView)
         {
             var mainPath = LoveVirtualPathProvider.Instance.RegisterExpression("H_" + partialView.GetHashCode() + "_" + model.GetHashCode(), partialView);
 

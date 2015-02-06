@@ -8,7 +8,7 @@ namespace LoveMvc
 {
     public class LoveTemplateBuilder
     {
-        public static LoveTemplate Build(ITemplateParser parser, IMarkupExpressionEvaluator evaluator, IViewViewModelPair pair)
+        public static LoveTemplate Build<T>(ITemplateParser parser, IMarkupExpressionEvaluator evaluator, IViewViewModelPair<T> pair)
         {
             var syntaxTree = parser.Parse(pair.ViewSource);
             syntaxTree.DecorateTree();

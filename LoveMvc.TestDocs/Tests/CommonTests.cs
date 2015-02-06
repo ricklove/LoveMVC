@@ -36,8 +36,6 @@ namespace LoveMvc.TestDocs.Tests
 
         public static IEnumerable<Exception> Test_DoesNotContainMarkupExpressions(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         {
-            var model = viewViewModelPair.Model;
-
             foreach (var n in template.Flatten())
             {
                 if (n is LoveMarkupExpression)
@@ -49,7 +47,7 @@ namespace LoveMvc.TestDocs.Tests
 
         public static IEnumerable<Exception> Test_AllBindingsMapToViewModel(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         {
-            var model = viewViewModelPair.Model;
+            var model = viewViewModelPair.ModelUntyped;
 
             var propertyMappings = GetPropertyMappings(model.GetType()).ToList();
 
@@ -124,13 +122,26 @@ namespace LoveMvc.TestDocs.Tests
             }
         }
 
-        private static IEnumerable<string> GetPropertyMappings(Type t)
+        private static IEnumerable<string> GetPropertyMappings(Type t, HashSet<Type> visitHistory = null)
         {
+            if (visitHistory == null)
+            {
+                visitHistory = new HashSet<Type>();
+            }
+
+            if (visitHistory.Contains(t))
+            {
+                yield break;
+            }
+
+            visitHistory.Add(t);
+
+
             foreach (var prop in t.GetProperties())
             {
                 yield return prop.Name;
 
-                foreach (var propInner in GetPropertyMappings(prop.PropertyType))
+                foreach (var propInner in GetPropertyMappings(prop.PropertyType, visitHistory))
                 {
                     yield return prop.Name + "." + propInner;
                 }
@@ -240,7 +251,7 @@ namespace LoveMvc.TestDocs.Tests
 
         public static IEnumerable<Exception> Test_DoesNotContainViewModelValueInMarkup(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         {
-            var model = viewViewModelPair.Model;
+            var model = viewViewModelPair.ModelUntyped;
             var values = GetPropertyValues(model)
                 .Where(v => v.Length != 1 || v.ToInt() > 1)
                 .Where(v => v != "True" && v != "False")

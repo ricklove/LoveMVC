@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace LoveMvc.TestDocs
 {
-    public class TestViewModel : IViewViewModelPair
+    public class TestViewModel : IViewViewModelPair<TestViewModel>
     {
         public TextReader GetViewDocument()
         {
@@ -29,7 +29,7 @@ namespace LoveMvc.TestDocs
 
         public static TextReader GetViewDocument(string name)
         {
-            var assembly = typeof(TestViewModel).GetTypeInfo().Assembly;
+            var assembly = typeof(Tests.LoveTestFail).GetTypeInfo().Assembly;
             var stream = assembly.GetManifestResourceStream(name);
 
             return new StreamReader(stream);
@@ -40,7 +40,12 @@ namespace LoveMvc.TestDocs
             get { return GetName(); }
         }
 
-        public object Model
+        public TestViewModel Model
+        {
+            get { return this; }
+        }
+
+        public object ModelUntyped
         {
             get { return this; }
         }
@@ -49,5 +54,8 @@ namespace LoveMvc.TestDocs
         {
             get { return GetViewDocument(); }
         }
+
+
+
     }
 }

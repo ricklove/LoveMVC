@@ -119,6 +119,10 @@
 
 - Refactor LoveVirtualViewProvider constructor
 
+### 13:08-13:35
+
+- Convert to generic type interfaces
+
 # Tasks
 
 
