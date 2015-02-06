@@ -1,0 +1,14 @@
+﻿@model LoveMvc.TestDocs.WebMvc.TodosViewModel
+
+@foreach (var t in Model.Todos)
+{<text>
+
+        START_NORMAL
+        @Html.ValidationMessageFor(x => t.TodoItem.Text)
+        END_NORMAL
+
+        START_SIMPLE
+        @t.TodoItem.Text
+        END_SIMPLE
+
+</text>}

@@ -30,8 +30,10 @@ namespace LoveMvc.WebMvc
         {
             if (expression.Content.Trim().StartsWith("Html."))
             {
+                var simpleExpression = HtmlHelperBindingMapper.GetSimpleRazorExpression(expression);
+
                 // Register view
-                var pView = CreatePartialView(model, "@" + expression.Content + "", expression.GetScopes());
+                var pView = CreatePartialView(model, "@" + expression.Content + "", "@" + simpleExpression + "", expression.GetScopes());
                 var mainPath = _provider.RegisterExpression("H_" + expression.Content.GetHashCode() + "_" + model.GetHashCode(), pView);
 
                 // Trying to intercept response
@@ -41,14 +43,25 @@ namespace LoveMvc.WebMvc
                 html.RenderPartial(mainPath, model);
 
                 var result = sb.ToString().Trim();
+                var normal = GetTextBetweenTags(result, "START_NORMAL", "END_NORMAL");
+                var simple = GetTextBetweenTags(result, "START_SIMPLE", "END_SIMPLE");
 
-                // TODO: Parse the markup
-                var b = new LoveBlock(0, 0);
-                b.Children.Add(new LoveMarkup(0, 0, result));
-                return b;
+                // Parse the markup
+                var mappedBlock = HtmlHelperBindingMapper.MapBinding(expression, normal, simple, simpleExpression);
+
+                return mappedBlock;
             }
 
             throw new InvalidOperationException();
+        }
+
+        private static string GetTextBetweenTags(string text, string startTag, string endTag)
+        {
+            var sIndex = text.IndexOf(startTag);
+            text = text.Substring(sIndex + startTag.Length);
+            var eIndex = text.IndexOf(endTag);
+            text = text.Substring(0, eIndex).Trim();
+            return text;
         }
 
         //private void Test()
@@ -65,7 +78,7 @@ namespace LoveMvc.WebMvc
 
         //}
 
-        private string CreatePartialView<T>(T model, string content, IEnumerable<LoveScope> scopes)
+        private string CreatePartialView<T>(T model, string expression, string simpleExpression, IEnumerable<LoveScope> scopes)
         {
             var scopePreSB = new StringBuilder();
 
@@ -73,7 +86,7 @@ namespace LoveMvc.WebMvc
             {
                 if (s.ScopeType == LoveScopeType.Foreach)
                 {
-                    scopePreSB.AppendFormat(@"@foreach( var {0} in {1} ) {{", s.Name.Content, s.Expression.Content);
+                    scopePreSB.AppendFormat(@"@foreach( var {0} in {1} ) {{<text>", s.Name.Content, s.Expression.Content);
                 }
             }
 
@@ -83,7 +96,7 @@ namespace LoveMvc.WebMvc
             {
                 if (s.ScopeType == LoveScopeType.Foreach)
                 {
-                    scopePostSB.Append("}");
+                    scopePostSB.Append("</text>}");
                     //scopePostSB.Append("} @Erro");
                 }
             }
@@ -100,13 +113,19 @@ namespace LoveMvc.WebMvc
     Layout = null;
 }}
 
-{2}
-
-{1}
-
 {3}
 
-", model.GetType().FullName, content, scopePreSB.ToString(), scopePostSB.ToString());
+START_NORMAL
+{1}
+END_NORMAL
+
+START_SIMPLE
+{2}
+END_SIMPLE
+
+{4}
+
+", model.GetType().FullName, expression, simpleExpression, scopePreSB.ToString(), scopePostSB.ToString());
         }
 
         public HtmlHelper<T> CreateHtmlHelper<T>(T model, StringWriter writer)

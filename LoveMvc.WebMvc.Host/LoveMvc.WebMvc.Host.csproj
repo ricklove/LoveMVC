@@ -100,6 +100,7 @@
     <Content Include="Views\Shared\Text.cshtml" />
     <Content Include="Views\Shared\LoveRoot.cshtml" />
     <Content Include="Views\Shared\TestResults.cshtml" />
+    <Content Include="Views\Home\Test.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

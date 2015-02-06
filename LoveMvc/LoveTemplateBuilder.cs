@@ -32,6 +32,9 @@ namespace LoveMvc
 
             var t = new LoveTemplate(syntaxTree);
 
+            // Redecorate tree
+            t._syntaxTree.DecorateTree();
+
             var tText = t.ToString();
 
             return t;
@@ -40,7 +43,7 @@ namespace LoveMvc
 
     public class LoveTemplate
     {
-        private LoveSyntaxTree _syntaxTree;
+        internal LoveSyntaxTree _syntaxTree;
         public LoveBlock Document { get { return _syntaxTree.Document; } }
 
         public LoveTemplate(LoveSyntaxTree syntaxTree)

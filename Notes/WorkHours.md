@@ -99,6 +99,10 @@
 
 - Add Data Value tests
 
+### 5:37-8:00
+
+- Add binding inside html helpers
+
 # Tasks
 
 - Handle Mappings in MarkupExpressions

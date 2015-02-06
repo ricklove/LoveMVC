@@ -22,6 +22,7 @@ namespace LoveMvc.WebMvc
             var evaluator = new WebMvcMarkupExpressionEvaluator(controllerContext);
 
             return LoveTemplateBuilder.Build(parser, evaluator, source);
+
         }
     }
 }

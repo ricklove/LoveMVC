@@ -9,6 +9,11 @@ namespace LoveMvc.WebMvc.Host.Controllers
 {
     public class HomeController : Controller
     {
+        public ActionResult Test()
+        {
+            return View(new LoveMvc.TestDocs.WebMvc.TodosViewModel());
+        }
+
         public ActionResult Index()
         {
             Response.Write("<html><body>");
