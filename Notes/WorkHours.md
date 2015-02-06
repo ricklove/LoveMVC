@@ -95,6 +95,10 @@
 
 - Add Foreach tests
 
+### 2015-02-06 4:18-5:36
+
+- Add Data Value tests
+
 # Tasks
 
 - Handle Mappings in MarkupExpressions
