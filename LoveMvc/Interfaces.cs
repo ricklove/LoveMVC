@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace LoveMvc
 {
+    public static class Providers
+    {
+        public static IViewRenderer ViewRenderer { get; set; }
+    }
+
     public interface ITemplateParser
     {
         LoveSyntaxTree Parse(TextReader source);
@@ -15,6 +20,11 @@ namespace LoveMvc
     public interface IMarkupExpressionEvaluator
     {
         LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model) where T : new();
+    }
+
+    public interface IViewRenderer
+    {
+        string RenderView<T>(IViewViewModelPair viewViewModelPair) where T : new();
     }
 
     public interface IViewViewModelPair

@@ -13,18 +13,15 @@ namespace LoveMvc.WebMvc
 {
     public class WebMvcMarkupExpressionEvaluator : IMarkupExpressionEvaluator
     {
-        private static ExpressionProvider _provider;
-
-        public static void Register()
+        public static void Initialize()
         {
-            _provider = new ExpressionProvider();
-            System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(_provider);
+            LoveVirtualViewProvider.Initialize();
         }
 
-        public ControllerContext ControllerContext { get; private set; }
+        public ControllerContext _controllerContext { get; private set; }
         public WebMvcMarkupExpressionEvaluator(ControllerContext controllerContext)
         {
-            ControllerContext = controllerContext;
+            _controllerContext = controllerContext;
         }
 
         public LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model) where T : new()
@@ -37,20 +34,11 @@ namespace LoveMvc.WebMvc
             if (expression.Content.Trim().StartsWith("Html."))
             {
                 var simpleExpression = HtmlHelperBindingMapper.GetSimpleRazorExpression(expression);
+                var scopes = expression.GetScopes();
+                var results = new LoveVirtualViewProvider(_controllerContext).GetExpressionEvaluation(model, expression.Content, simpleExpression, scopes);
 
-                // Register view
-                var pView = CreatePartialView(model, "@" + expression.Content + "", "@" + simpleExpression + "", expression.GetScopes());
-                var mainPath = _provider.RegisterExpression("H_" + expression.Content.GetHashCode() + "_" + model.GetHashCode(), pView);
-
-                // Trying to intercept response
-                var sb = new StringBuilder();
-                var writer = new StringWriter(sb);
-                var html = CreateHtmlHelper(model, writer);
-                html.RenderPartial(mainPath, model);
-
-                var result = sb.ToString().Trim();
-                var normal = GetTextBetweenTags(result, "START_NORMAL", "END_NORMAL");
-                var simple = GetTextBetweenTags(result, "START_SIMPLE", "END_SIMPLE");
+                var normal = results.NormalResults;
+                var simple = results.SimpleResults;
 
                 // WARNING: This is buggy!
                 // Ensure model has data at relevant property
@@ -149,205 +137,6 @@ namespace LoveMvc.WebMvc
             return model;
         }
 
-        private static string GetTextBetweenTags(string text, string startTag, string endTag)
-        {
-            var sIndex = text.IndexOf(startTag);
-            text = text.Substring(sIndex + startTag.Length);
-            var eIndex = text.IndexOf(endTag);
-            text = text.Substring(0, eIndex).Trim();
-            return text;
-        }
-
-        //private void Test()
-        //{
-        //    var model = new LoveMvc.WebMvc.TestDocs.TodosViewModel();
-
-        //    var sb = new StringBuilder();
-        //    var writer = new StringWriter(sb);
-        //    var html = CreateHtmlHelper(model, writer);
-
-        //    html.DisplayFor(m => m.NewTodoText);
-
-        //    var result = sb.ToString();
-
-        //}
-
-        private string CreatePartialView<T>(T model, string expression, string simpleExpression, IEnumerable<LoveScope> scopes)
-        {
-            var scopePreSB = new StringBuilder();
-
-            foreach (var s in scopes)
-            {
-                if (s.ScopeType == LoveScopeType.Foreach)
-                {
-                    scopePreSB.AppendFormat(@"@foreach( var {0} in {1} ) {{<text>", s.Name.Content, s.Expression.Content);
-                }
-            }
-
-            var scopePostSB = new StringBuilder();
-
-            foreach (var s in scopes.Reverse())
-            {
-                if (s.ScopeType == LoveScopeType.Foreach)
-                {
-                    scopePostSB.Append("</text>}");
-                    //scopePostSB.Append("} @Erro");
-                }
-            }
-
-            return string.Format(@"
-@using System.Web.Mvc;
-@using System.Web.Mvc.Ajax;
-@using System.Web.Mvc.Html;
-@using System.Web.Routing;
-
-@inherits System.Web.Mvc.WebViewPage<{0}>
-
-@{{
-    Layout = null;
-}}
-
-{3}
-
-START_NORMAL
-{1}
-END_NORMAL
-
-START_SIMPLE
-{2}
-END_SIMPLE
-
-{4}
-
-", model.GetType().FullName, expression, simpleExpression, scopePreSB.ToString(), scopePostSB.ToString());
-        }
-
-        public HtmlHelper<T> CreateHtmlHelper<T>(T model, StringWriter writer)
-        {
-            var controllerContext = ControllerContext;
-            return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(model), new TempDataDictionary(), writer), new ViewPage()); ;
-        }
-
-
-
-        public class ExpressionProvider : VirtualPathProvider
-        {
-            public Dictionary<string, string> Expressions { get; private set; }
-
-            public ExpressionProvider()
-            {
-                Expressions = new Dictionary<string, string>();
-            }
-
-            public string RegisterExpression(string name, string expression)
-            {
-                Expressions[name] = expression;
-                return GetVirtualPathFromName(name);
-            }
-
-            private static string PathPrefix = "/Love_Expression/";
-            private static string PathSuffix = ".love.expression.cshtml";
-
-            public static string GetVirtualPathFromName(string name)
-            {
-                return "~" + PathPrefix + name + PathSuffix;
-            }
-
-            private static string GetExpressionName(string virtualPath)
-            {
-                var relativePath = VirtualPathUtility.ToAppRelative(virtualPath);
-                relativePath = relativePath.TrimStart('~');
-
-                if (!relativePath.StartsWith(PathPrefix)
-                    || !relativePath.EndsWith(PathSuffix))
-                {
-                    return "";
-                }
-
-                var name = relativePath.Substring(PathPrefix.Length);
-                name = name.Substring(0, name.Length - PathSuffix.Length);
-                return name;
-            }
-
-            private bool DoesFileExist(string virtualPath)
-            {
-                return Expressions.ContainsKey(GetExpressionName(virtualPath));
-            }
-
-            private string GetExpression(string virtualPath)
-            {
-                return Expressions[GetExpressionName(virtualPath)];
-            }
-
-            private VirtualFile DoGetFile(string virtualPath)
-            {
-                if (DoesFileExist(virtualPath))
-                {
-                    return new LoveVirtualFile(virtualPath, GetExpression(virtualPath));
-                }
-                else
-                {
-                    return null;
-                }
-            }
-
-            public override bool FileExists(string virtualPath)
-            {
-                if (DoesFileExist(virtualPath))
-                {
-                    return true;
-                }
-                else
-                {
-                    return Previous.FileExists(virtualPath);
-                }
-            }
-
-            public override VirtualFile GetFile(string virtualPath)
-            {
-                var file = DoGetFile(virtualPath);
-
-                if (file != null)
-                {
-                    return file;
-                }
-                else
-                {
-                    return Previous.GetFile(virtualPath);
-                }
-            }
-
-            public override System.Web.Caching.CacheDependency
-                   GetCacheDependency(string virtualPath,
-                   System.Collections.IEnumerable virtualPathDependencies,
-                   DateTime utcStart)
-            {
-                if (DoesFileExist(virtualPath))
-                {
-                    return null;
-                }
-                else
-                {
-                    return Previous.GetCacheDependency(virtualPath, virtualPathDependencies, utcStart);
-                }
-            }
-        }
-
-        public class LoveVirtualFile : VirtualFile
-        {
-            public string Text { get; private set; }
-
-            public LoveVirtualFile(string path, string text)
-                : base(path)
-            {
-                Text = text;
-            }
-
-            public override Stream Open()
-            {
-                return new MemoryStream(Encoding.UTF8.GetBytes(Text ?? ""));
-            }
-        }
 
     }
 }

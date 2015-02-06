@@ -111,6 +111,9 @@
 
 - Create mapping when actual value is blank or common
 
+### 11:45-12:30
+
+- Refactor LoveVirtualViewProvider
 
 # Tasks
 
@@ -122,4 +125,6 @@
 ## Convert Templates to Asp.Net Mvc with Client Selection
 
 
-## Fix: Use custom objects for models for blank data
+## Fix
+
+- Use custom objects for models for blank data

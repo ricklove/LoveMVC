@@ -9,7 +9,7 @@ namespace LoveMvc.TestDocs.Tests
 {
     public class CommonTests
     {
-        public static IEnumerable<Exception> RunTests(LoveTemplate template, object model)
+        public static IEnumerable<Exception> RunTests(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         {
             //var tests = new List<Func<LoveTemplate, object, IEnumerable<Exception>>>() { 
             //    Test_DoesNotContainMarkupExpressions,
@@ -17,17 +17,16 @@ namespace LoveMvc.TestDocs.Tests
             //    Test_DoesNotContainViewModelReferencesInMarkup
             //};
 
-            var delegateType = typeof(Func<LoveTemplate, object, IEnumerable<Exception>>);
+            var delegateType = typeof(Func<LoveTemplate, IViewViewModelPair, IEnumerable<Exception>>);
             var tests = typeof(CommonTests).GetMethods()
                 .Where(m => m.Name != "RunTests")
-                .Select(m => Delegate.CreateDelegate(delegateType, m, false) as Func<LoveTemplate, object, IEnumerable<Exception>>)
+                .Select(m => Delegate.CreateDelegate(delegateType, m, false) as Func<LoveTemplate, IViewViewModelPair, IEnumerable<Exception>>)
                 .Where(d => d != null)
                 .ToList();
 
-
             foreach (var test in tests)
             {
-                foreach (var ex in test(template, model))
+                foreach (var ex in test(template, viewViewModelPair))
                 {
                     yield return ex;
                 }
@@ -35,8 +34,10 @@ namespace LoveMvc.TestDocs.Tests
 
         }
 
-        public static IEnumerable<Exception> Test_DoesNotContainMarkupExpressions(LoveTemplate template, object model)
+        public static IEnumerable<Exception> Test_DoesNotContainMarkupExpressions(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         {
+            var model = viewViewModelPair.Model;
+
             foreach (var n in template.Flatten())
             {
                 if (n is LoveMarkupExpression)
@@ -46,8 +47,10 @@ namespace LoveMvc.TestDocs.Tests
             }
         }
 
-        public static IEnumerable<Exception> Test_AllBindingsMapToViewModel(LoveTemplate template, object model)
+        public static IEnumerable<Exception> Test_AllBindingsMapToViewModel(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         {
+            var model = viewViewModelPair.Model;
+
             var propertyMappings = GetPropertyMappings(model.GetType()).ToList();
 
             var scopes = new string[] { "Model" }.ToDictionary(s => s, s => new HashSet<string>(propertyMappings.Select(p => s + "." + p)));
@@ -215,8 +218,9 @@ namespace LoveMvc.TestDocs.Tests
             }
         }
 
-        //public static IEnumerable<Exception> Test_DoesNotContainViewModelReferencesInMarkup(LoveTemplate template, object model)
+        //public static IEnumerable<Exception> Test_DoesNotContainViewModelReferencesInMarkup(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         //{
+        //    var model = viewViewModelPair.Model;
         //    var propertyMappings = GetPropertyMappings(model.GetType());
         //    var propertyNames = propertyMappings.SelectMany(p => p.Split('.'));
         //    var propertyLookups = propertyNames.Select(p=> "." + p);
@@ -234,8 +238,9 @@ namespace LoveMvc.TestDocs.Tests
         //    }
         //}
 
-        public static IEnumerable<Exception> Test_DoesNotContainViewModelValueInMarkup(LoveTemplate template, object model)
+        public static IEnumerable<Exception> Test_DoesNotContainViewModelValueInMarkup(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         {
+            var model = viewViewModelPair.Model;
             var values = GetPropertyValues(model)
                 .Where(v => v.Length != 1 || v.ToInt() > 1)
                 .Where(v => v != "True" && v != "False")
@@ -254,6 +259,10 @@ namespace LoveMvc.TestDocs.Tests
             }
         }
 
+        //public static IEnumerable<Exception> Test_DoesRenderedViewEqualConstructedView(LoveTemplate template, IViewViewModelPair viewViewModelPair)
+        //{
+        //    //var whole = LoveVirtualViewProvider.
+        //}
 
     }
 

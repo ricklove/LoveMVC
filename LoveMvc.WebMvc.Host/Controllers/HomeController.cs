@@ -38,7 +38,7 @@ namespace LoveMvc.WebMvc.Host.Controllers
                 Response.Write(templateView);
                 Response.Flush();
 
-                var testResults = TestDocs.Tests.CommonTests.RunTests(template, doc.Model);
+                var testResults = TestDocs.Tests.CommonTests.RunTests(template, doc);
                 var testResultsView = ControllerContext.RenderPartialViewToString("TestResults", testResults);
                 Response.Write(testResultsView);
                 Response.Flush();

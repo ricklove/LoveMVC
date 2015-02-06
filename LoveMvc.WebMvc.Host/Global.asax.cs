@@ -14,7 +14,7 @@ namespace LoveMvc.WebMvc.Host
             AreaRegistration.RegisterAllAreas();
             RegisterRoutes(RouteTable.Routes);
 
-            LoveMvc.WebMvc.WebMvcMarkupExpressionEvaluator.Register();
+            LoveMvc.WebMvc.WebMvcMarkupExpressionEvaluator.Initialize();
         }
 
         public static void RegisterRoutes(RouteCollection routes)
