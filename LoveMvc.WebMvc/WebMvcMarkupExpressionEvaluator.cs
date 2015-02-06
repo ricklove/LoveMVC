@@ -35,7 +35,7 @@ namespace LoveMvc.WebMvc
             {
                 var simpleExpression = HtmlHelperBindingMapper.GetSimpleRazorExpression(expression);
                 var scopes = expression.GetScopes();
-                var results = new LoveVirtualViewProvider(_controllerContext).GetExpressionEvaluation(model, expression.Content, simpleExpression, scopes);
+                var results = LoveVirtualViewProvider.Instance.GetExpressionEvaluation(model, expression.Content, simpleExpression, scopes);
 
                 var normal = results.NormalResults;
                 var simple = results.SimpleResults;

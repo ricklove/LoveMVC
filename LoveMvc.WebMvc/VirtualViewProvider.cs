@@ -8,21 +8,58 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using System.Web.Routing;
 
 namespace LoveMvc.WebMvc
 {
     public class LoveVirtualViewProvider : IViewRenderer
     {
-        public static void Initialize()
+        // FROM: http://stackoverflow.com/questions/7865598/asp-net-mvc-3-get-the-current-controller-instance-not-just-name
+        public class LoveControllerFactory : DefaultControllerFactory
         {
-            System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(LoveVirtualPathProvider.Initialize());
+            public override IController CreateController(RequestContext requestContext, string controllerName)
+            {
+                var controller = base.CreateController(requestContext, controllerName);
+                HttpContext.Current.Session["controllerInstance"] = controller;
+                return controller;
+            }
+
+            public static IController CurrentController
+            {
+                get
+                {
+                    var controller = (IController)HttpContext.Current.Session["controllerInstance"];
+                    return controller;
+                }
+            }
+
+            public static ControllerContext CurrentControllerContext
+            {
+                get
+                {
+                    return (CurrentController as ControllerBase).ControllerContext;
+                }
+            }
         }
 
-        private ControllerContext _controllerContext;
-
-        public LoveVirtualViewProvider(ControllerContext controllerContext)
+        public static void Initialize()
         {
-            _controllerContext = controllerContext;
+            ControllerBuilder.Current.SetControllerFactory(new LoveControllerFactory());
+            System.Web.Hosting.HostingEnvironment.RegisterVirtualPathProvider(LoveVirtualPathProvider.Initialize());
+
+            Providers.ViewRenderer = new LoveVirtualViewProvider();
+        }
+
+        public static LoveVirtualViewProvider Instance
+        {
+            get
+            {
+                return Providers.ViewRenderer as LoveVirtualViewProvider;
+            }
+        }
+
+        private LoveVirtualViewProvider()
+        {
         }
 
         public string RenderView<T>(IViewViewModelPair viewViewModelPair) where T : new()
@@ -81,7 +118,7 @@ namespace LoveMvc.WebMvc
 
         public HtmlHelper<T> CreateHtmlHelper<T>(T model, StringWriter writer)
         {
-            ControllerContext controllerContext = _controllerContext;
+            ControllerContext controllerContext = LoveControllerFactory.CurrentControllerContext;
             return new HtmlHelper<T>(new ViewContext(controllerContext, new WebFormView(controllerContext, "VIEW_PATH"), new ViewDataDictionary(model), new TempDataDictionary(), writer), new ViewPage()); ;
         }
 

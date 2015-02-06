@@ -261,7 +261,7 @@ namespace LoveMvc.TestDocs.Tests
 
         //public static IEnumerable<Exception> Test_DoesRenderedViewEqualConstructedView(LoveTemplate template, IViewViewModelPair viewViewModelPair)
         //{
-        //    //var whole = LoveVirtualViewProvider.
+        //    //Providers.ViewRenderer.RenderView()
         //}
 
     }

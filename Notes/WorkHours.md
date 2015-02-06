@@ -115,6 +115,10 @@
 
 - Refactor LoveVirtualViewProvider
 
+### 12:50-13:07
+
+- Refactor LoveVirtualViewProvider constructor
+
 # Tasks
 
 
