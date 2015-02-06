@@ -21,8 +21,8 @@
                     <li @{if (t.TodoItem.IsDone) { <text> class="completed" </text>   }}>
                         <div class="view">
                             <input class="toggle" type="checkbox" @{if (t.TodoItem.IsDone) { <text> checked </text>    }}>
-                            <label>@t.TodoItem.Text</label>
                             @Html.LabelFor(x => t.TodoItem.Text)
+                            @Html.EditorFor(x => t.TodoItem.Text)
                             <button class="destroy"></button>
                         </div>
                         <input class="edit" value="@t.TodoItem.Text">

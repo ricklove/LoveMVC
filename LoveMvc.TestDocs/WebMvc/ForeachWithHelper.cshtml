@@ -1,0 +1,9 @@
+﻿@model LoveMvc.TestDocs.WebMvc.TodosViewModel
+
+
+@foreach (var t in Model.Todos)
+{
+    @Html.ValidationMessageFor(x => t.TodoItem.Text)
+    @Html.LabelFor(x => t.TodoItem.Text)
+    @Html.EditorFor(x => t.TodoItem.Text)
+}

@@ -32,7 +32,7 @@ namespace LoveMvc.WebMvc
             {
                 // Register view
                 var pView = CreatePartialView(model, "@" + expression.Content + "", expression.GetScopes());
-                var mainPath = _provider.RegisterExpression("H_" + expression.Content.GetHashCode(), pView);
+                var mainPath = _provider.RegisterExpression("H_" + expression.Content.GetHashCode() + "_" + model.GetHashCode(), pView);
 
                 // Trying to intercept response
                 var sb = new StringBuilder();
@@ -84,6 +84,7 @@ namespace LoveMvc.WebMvc
                 if (s.ScopeType == LoveScopeType.Foreach)
                 {
                     scopePostSB.Append("}");
+                    //scopePostSB.Append("} @Erro");
                 }
             }
 

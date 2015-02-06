@@ -83,33 +83,25 @@
 
 - Designing Binding Mappings
 
-### 
+### 14:00-16:38
 
+- Handle Model declaration and Not
 
+### 16:39-17:51
+
+- Handle if in tag
+
+### 17:52-18:16
+
+- Add Foreach tests
 
 # Tasks
 
-
-## Generate Templates
-
-- Remove Dependencies from code
-- Setup Minimal Love Template Generation Environment
-- Create Test environment (Still requires IIS because of Virtual Path Providers)
+- Handle Mappings in MarkupExpressions
+- Create specific values for markup expressions
 
 ## Convert Templates to Pure Html
 
 ## Convert Templates to Knockout Client
 
 ## Convert Templates to Asp.Net Mvc with Client Selection
-
-
-
-// System.Web.Mvc.Html.TemplateHelpers
-internal static Dictionary<string, Func<HtmlHelper, string>> GetDefaultActions(DataBoundControlMode mode)
-{
-	if (mode != DataBoundControlMode.ReadOnly)
-	{
-		return TemplateHelpers._defaultEditorActions;
-	}
-	return TemplateHelpers._defaultDisplayActions;
-}

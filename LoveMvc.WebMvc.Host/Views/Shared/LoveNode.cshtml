@@ -8,7 +8,6 @@
 @if (node is LoveForeachBlock)
 {
     LoveForeachBlock n = node as LoveForeachBlock;
-
     <span class="foreach">
         <span>%foreach( @n.ItemName in @Html.Partial("LoveNode", n.Expression) ) {</span>
         @Html.Partial("LoveNode", n.Body)

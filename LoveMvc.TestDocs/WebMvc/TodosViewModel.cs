@@ -38,7 +38,9 @@ namespace LoveMvc.TestDocs.WebMvc
         {
             NewTodoText = "New Do This!";
             Todos = new List<TodoItemViewModel>();
-            Todos.Add(new TodoItemViewModel() { TodoItem = new TodoItem() { ID = 1, IsDone = false, Text = "Do this!" } });
+            Todos.Add(new TodoItemViewModel() { TodoItem = new TodoItem() { ID = 1, IsDone = false, Text = "Do this 1!" } });
+            //Todos.Add(new TodoItemViewModel() { TodoItem = new TodoItem() { ID = 2, IsDone = false, Text = "Do this 2!" } });
+            //Todos.Add(new TodoItemViewModel() { TodoItem = new TodoItem() { ID = 3, IsDone = false, Text = "Do this 3!" } });
         }
     }
 

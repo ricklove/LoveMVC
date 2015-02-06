@@ -1,0 +1,7 @@
+﻿@model LoveMvc.TestDocs.WebMvc.TodosViewModel
+
+
+@foreach (var t in Model.Todos)
+{
+    @t.TodoItem.Text
+}
