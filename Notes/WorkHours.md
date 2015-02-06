@@ -103,13 +103,23 @@
 
 - Add binding inside html helpers
 
+### 8:30-8:40
+
+- Add email test
+
+### 10:00-11:00
+
+- Create mapping when actual value is blank or common
+
+
 # Tasks
 
-- Handle Mappings in MarkupExpressions
-- Create specific values for markup expressions
 
-## Convert Templates to Pure Html
+## Convert Templates to Pure Html with actual Data
 
 ## Convert Templates to Knockout Client
 
 ## Convert Templates to Asp.Net Mvc with Client Selection
+
+
+## Fix: Use custom objects for models for blank data

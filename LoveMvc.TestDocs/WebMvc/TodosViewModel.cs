@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -34,9 +35,27 @@ namespace LoveMvc.TestDocs.WebMvc
 
         public string NewTodoText { get; set; }
 
+
+        [Required]
+        [EmailAddress]
+        public string EmailBlank { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string EmailOK { get; set; }
+
+        [Required]
+        [EmailAddress]
+        public string EmailError { get; set; }
+
+
         public TodosViewModel()
         {
             NewTodoText = "New Do This!";
+            EmailOK = "rick@toldpro.com";
+            EmailError = "rick";
+            EmailBlank = "";
+
             Todos = new List<TodoItemViewModel>();
             Todos.Add(new TodoItemViewModel() { TodoItem = new TodoItem() { ID = 1, IsDone = false, Text = "Do this 1!" } });
             //Todos.Add(new TodoItemViewModel() { TodoItem = new TodoItem() { ID = 2, IsDone = false, Text = "Do this 2!" } });

@@ -1,0 +1,26 @@
+﻿@model LoveMvc.TestDocs.WebMvc.TodosViewModel
+
+<div>
+    <h3>
+        EmailOK
+    </h3>
+    @Html.ValidationMessageFor(m => m.EmailOK)
+    @Html.LabelFor(m => m.EmailOK)
+    @Html.EditorFor(m => m.EmailOK)
+</div>
+<div>
+    <h3>
+        EmailBlank
+    </h3>
+    @Html.ValidationMessageFor(m => m.EmailBlank)
+    @Html.LabelFor(m => m.EmailBlank)
+    @Html.EditorFor(m => m.EmailBlank)
+</div>
+<div>
+    <h3>
+        EmailError
+    </h3>
+    @Html.ValidationMessageFor(m => m.EmailError)
+    @Html.LabelFor(m => m.EmailError)
+    @Html.EditorFor(m => m.EmailError)
+</div>

@@ -14,7 +14,7 @@ namespace LoveMvc
 
     public interface IMarkupExpressionEvaluator
     {
-        LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model);
+        LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model) where T : new();
     }
 
     public interface IViewViewModelPair

@@ -14,9 +14,10 @@ namespace LoveMvc.TestDocs.WebMvc
 
             var todosModel = new TodosViewModel();
 
-            docs.Add(GetPair(todosModel, "ForeachWithHelper"));
+            docs.Add(GetPair(todosModel, "Email"));
             docs.Add(GetPair(todosModel, "Helper"));
             docs.Add(GetPair(todosModel, "Foreach"));
+            docs.Add(GetPair(todosModel, "ForeachWithHelper"));
             docs.Add(GetPair(todosModel, "PureMarkup"));
             docs.Add(GetPair(todosModel, "NotBinding"));
             docs.Add(GetPair(todosModel, "IfBlock"));
