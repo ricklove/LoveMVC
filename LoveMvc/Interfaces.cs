@@ -12,6 +12,8 @@ namespace LoveMvc
         public static IViewRenderer ViewRenderer { get; set; }
     }
 
+    #region Parsing Interfaces
+
     public interface ITemplateParser
     {
         LoveSyntaxTree Parse(TextReader source);
@@ -20,11 +22,6 @@ namespace LoveMvc
     public interface IMarkupExpressionEvaluator
     {
         LoveBlock Evaluate<T>(LoveMarkupExpression expression, T model);
-    }
-
-    public interface IViewRenderer
-    {
-        string RenderView<T>(IViewViewModelPair<T> viewViewModelPair);
     }
 
     public interface IViewViewModelPair
@@ -60,4 +57,27 @@ namespace LoveMvc
             get { return Model; }
         }
     }
+
+
+
+    public interface IViewRenderer
+    {
+        string RenderView<T>(IViewViewModelPair<T> viewViewModelPair);
+    }
+
+    public interface ITemplateBuilder
+    {
+        LoveTemplate BuildTemplate<T>(IViewViewModelPair<T> viewViewModelPair);
+    }
+
+    #endregion
+
+    #region Populating Interfaces
+
+    public interface ITemplateTranslator
+    {
+        LoveTranslation TranslateTemplate(LoveTemplate template, object model);
+    }
+
+    #endregion
 }

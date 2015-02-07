@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveMvc.TestDocs", "LoveMvc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveMvc", "LoveMvc\LoveMvc.csproj", "{13D4AB9C-5FBA-430C-8F1A-BDE3E3732F56}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Translators", "Translators", "{7A1FB036-FB72-4FE6-B0D0-83EDD419EFED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LoveMvc.Translators.KnockoutJs", "Translators\LoveMvc.Translators.KnockoutJs\LoveMvc.Translators.KnockoutJs.csproj", "{5BAECD14-6DFE-4E14-A567-77CAA39B5735}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,8 +43,15 @@ Global
 		{13D4AB9C-5FBA-430C-8F1A-BDE3E3732F56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13D4AB9C-5FBA-430C-8F1A-BDE3E3732F56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13D4AB9C-5FBA-430C-8F1A-BDE3E3732F56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5BAECD14-6DFE-4E14-A567-77CAA39B5735}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5BAECD14-6DFE-4E14-A567-77CAA39B5735}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5BAECD14-6DFE-4E14-A567-77CAA39B5735}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5BAECD14-6DFE-4E14-A567-77CAA39B5735}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{5BAECD14-6DFE-4E14-A567-77CAA39B5735} = {7A1FB036-FB72-4FE6-B0D0-83EDD419EFED}
 	EndGlobalSection
 EndGlobal

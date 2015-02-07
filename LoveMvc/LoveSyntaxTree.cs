@@ -49,11 +49,58 @@ namespace LoveMvc
         Foreach
     }
 
-    public class LoveNode
+    public enum LoveNodeKind
+    {
+        LoveBlock,
+        LoveModelStatement,
+        LoveName,
+        LoveMarkup,
+        LoveMarkupExpression,
+        LoveBinding,
+        LoveNotBinding,
+        LoveControlBlock,
+        LoveIfBlock,
+        LoveForeachBlock
+    }
+
+    internal static class LoveNodeKindUtility
+    {
+        // Code Generator
+
+        public static string GenerateEnumValues()
+        {
+            var assembly = typeof(LoveNode).Assembly;
+            var types = assembly.GetTypes();
+            var validTypes = types
+                .Where(t => !t.IsAbstract)
+                .Where(t => typeof(LoveNode).IsAssignableFrom(t))
+                .ToList();
+
+            var values = validTypes.Aggregate(new StringBuilder(), (sb, t) => sb.AppendLine(t.Name + ",")).ToString().Trim().TrimEnd(',');
+
+            return values;
+        }
+
+        public static LoveNodeKind GetKind(LoveNode loveNode)
+        {
+            var typeName = loveNode.GetType().Name;
+
+            LoveNodeKind value;
+            if (Enum.TryParse<LoveNodeKind>(typeName, out value))
+            {
+                return value;
+            }
+
+            throw new InvalidOperationException("Please Regenerate LoveNodeKind by calling LoveMvc.LoveNodeKindUtility.GenerateEnumValues() from within the LoveMvc project context and pasting those values into LoveNodeKind source code.");
+        }
+    }
+
+    public abstract class LoveNode
     {
         private static int __nextID = 0;
 
         public int ID { get; private set; }
+        public LoveNodeKind Kind { get; private set; }
 
         public int Start { get; protected set; }
         public int Length { get; protected set; }
@@ -90,6 +137,8 @@ namespace LoveMvc
             Length = length;
 
             ID = __nextID++;
+
+            Kind = LoveNodeKindUtility.GetKind(this);
         }
 
         public override string ToString()
@@ -185,7 +234,7 @@ namespace LoveMvc
         }
     }
 
-    public class LoveSpan : LoveNode
+    public abstract class LoveSpan : LoveNode
     {
         public string Content { get; set; }
 
@@ -205,6 +254,14 @@ namespace LoveMvc
             Start = start;
             Length = length;
             Content = content;
+        }
+    }
+
+    public class LoveName : LoveSpan
+    {
+        public LoveName(int start, int length, string content)
+            : base(start, length, content)
+        {
         }
     }
 

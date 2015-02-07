@@ -346,7 +346,7 @@ namespace LoveMvc.Razor
                     var itemName = m.Groups[1].Value;
                     statement = m.Groups[2].Value;
 
-                    var itemNameSpan = new LoveSpan(controlStart.Start + controlStart.Content.IndexOf(itemName), itemName.Length, itemName);
+                    var itemNameSpan = new LoveName(controlStart.Start + controlStart.Content.IndexOf(itemName), itemName.Length, itemName);
 
                     LoveBindingBase statementBinding = CreateStatement(controlStart, statement);
                     return new LoveForeachBlock(controlStart.Start, controlEnd.Start - controlStart.Start + controlEnd.Length,

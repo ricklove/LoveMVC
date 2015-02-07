@@ -18,11 +18,25 @@ namespace LoveMvc.WebMvc
 
         public static LoveTemplate Host<T>(System.Web.Mvc.ControllerContext controllerContext, IViewViewModelPair<T> source)
         {
+            return new WebMvcTemplateRenderer(controllerContext).BuildTemplate(source);
+        }
+    }
+
+    public class WebMvcTemplateRenderer : ITemplateBuilder
+    {
+        System.Web.Mvc.ControllerContext _controllerContext;
+
+        public WebMvcTemplateRenderer(System.Web.Mvc.ControllerContext controllerContext)
+        {
+            _controllerContext = controllerContext;
+        }
+
+        public LoveTemplate BuildTemplate<T>(IViewViewModelPair<T> viewViewModelPair)
+        {
             var parser = new RazorParser();
-            var evaluator = new WebMvcMarkupExpressionEvaluator(controllerContext);
+            var evaluator = new WebMvcMarkupExpressionEvaluator(_controllerContext);
 
-            return LoveTemplateBuilder.Build(parser, evaluator, source);
-
+            return LoveTemplateBuilder.Build(parser, evaluator, viewViewModelPair);
         }
     }
 }

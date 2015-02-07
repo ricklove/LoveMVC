@@ -64,7 +64,15 @@ namespace LoveMvc.WebMvc
 
         public string RenderView<T>(IViewViewModelPair<T> viewViewModelPair)
         {
-            var partialView = CreatePartialView(viewViewModelPair.Model, viewViewModelPair.ViewSource.ReadToEnd());
+            var source = viewViewModelPair.ViewSource.ReadToEnd().Trim();
+
+            // Remove model line
+            if (source.StartsWith("@model"))
+            {
+                source = source.Substring(source.IndexOf("\r\n")).Trim();
+            }
+
+            var partialView = CreatePartialView(viewViewModelPair.Model, source);
             var result = Render(viewViewModelPair.Model, partialView);
             var normalResults = GetTextBetweenTags(result, "START_NORMAL", "END_NORMAL");
 

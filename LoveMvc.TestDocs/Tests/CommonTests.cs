@@ -270,10 +270,80 @@ namespace LoveMvc.TestDocs.Tests
             }
         }
 
-        //public static IEnumerable<Exception> Test_DoesRenderedViewEqualConstructedView(LoveTemplate template, IViewViewModelPair viewViewModelPair)
-        //{
-        //    //Providers.ViewRenderer.RenderView()
-        //}
+        public static IEnumerable<Exception> Test_DoesRenderedViewEqualConstructedView(LoveTemplate template, IViewViewModelPair viewViewModelPair)
+        {
+            // TODO: Remove generic types from IViewViewModelPair because they are unneeded complexity
+            var renderedView = Providers.ViewRenderer.RenderView<object>(new ViewViewModelPair<object>(viewViewModelPair.ModelUntyped, () => { return viewViewModelPair.ViewSource; }, viewViewModelPair.Name));
+
+            var constructedView = new Translators.HtmlTranslator().TranslateTemplate(template, viewViewModelPair.ModelUntyped);
+
+            var rLines = renderedView.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+            var cLines = constructedView.MainPart.Content.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+            // Normalize spaces
+            NormalizeWhitespace(rLines);
+            NormalizeWhitespace(cLines);
+
+            if (rLines.Length != cLines.Length)
+            {
+                yield return new LoveTestFail("renderedView and constructedView don't even have the same number of lines");
+            }
+
+            for (int i = 0; i < rLines.Length && i < cLines.Length; i++)
+            {
+                var rLine = rLines[i];
+                var cLine = cLines[i];
+
+                if (rLine != cLine)
+                {
+                    yield return new LoveTestFail("renderedView and constructedView lines don't match: \r\n rLine:'" + rLine + "' \r\n cLine:'" + cLine + "'");
+                }
+            }
+
+        }
+
+        private static void NormalizeWhitespace(string[] lines)
+        {
+            for (int i = 0; i < lines.Length; i++)
+            {
+                lines[i] = NormalizeWhitespace(lines[i]);
+            }
+        }
+
+        private static string NormalizeWhitespace(string text, bool keepTabs = false, bool keepReturns = true)
+        {
+            var replacements = new[] {
+                new {match="  ", replace=" "},
+                new {match="\t ", replace="\t"},
+                new {match="\t\t", replace="\t"},
+                new {match="\r\n", replace="\n"},
+                new {match="\n ", replace="\n"},
+                new {match="\n\t", replace="\n"},
+                new {match="\n\n", replace="\n"},
+                new {match="\n", replace="\r\n"},
+            }.ToList();
+
+            if (!keepTabs)
+            {
+                replacements.Add(new { match = "\t", replace = " " });
+            }
+
+            if (!keepReturns)
+            {
+                replacements.Add(new { match = "\r", replace = " " });
+                replacements.Add(new { match = "\n", replace = " " });
+            }
+
+            foreach (var r in replacements)
+            {
+                while (text.Contains(r.match))
+                {
+                    text = text.Replace(r.match, r.replace);
+                }
+            }
+
+            return text;
+        }
 
     }
 

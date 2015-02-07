@@ -123,8 +123,18 @@
 
 - Convert to generic type interfaces
 
+### 2015-02-07 3:50-5:20
+
+- Populate Template with data with no modifications
+
+### 5:21-
+
+
+
 # Tasks
 
+- Implement HtmlTranslator
+- Convert back to untyped viewmodel
 
 ## Convert Templates to Pure Html with actual Data
 
